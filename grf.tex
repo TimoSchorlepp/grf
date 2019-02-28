@@ -20,9 +20,10 @@
 
 \frame{\frametitle{Table of contents}\tableofcontents} 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Motivation} 
-\frame{\frametitle{Motivation I} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Motivation:\\Exemplary applications} 
 \begin{columns}[t]
 \column{.5\textwidth}
 \centering
@@ -39,8 +40,8 @@ Vogelsberger et al. 2014, Illustris simulation}\\
 \tiny{Wikimedia, aquifer sketch}
 \end{columns}
 }
-
-\frame{\frametitle{Motivation II} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Motivation:\\Mathematical examples} 
 Deterministic incompressible NSE for $\vec{u}:\mathbb{T}^n \times \mathbb{R}_+ \to \mathbb{R}^n$:
 \begin{align*}
 \partial_t \vec{u} + (\vec{u} \cdot \nabla) \vec{u} + \nabla p = \nu \Delta \vec{u}\; , \; \nabla \cdot \vec{u} = 0 
@@ -53,11 +54,60 @@ Gronwall: Energy decays exponentially, need forcing for interesting long-term be
 \medskip
 Similarly: Stochastic heat equation
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Theory} 
-\frame{\frametitle{Basic Definitions}
-. \\
-\pause
-.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Theory:\\Basic Definitions}
+\begin{block}{Definition 1}
+A random field $\vec{\xi}$ is an indexed family of random variables
+\begin{align*}
+\vec{\xi} = \left\{ \vec{\xi}(\vec{x}) : \Omega \to \mathbb{R}^m \; ; \; \vec{x} \in T \subseteq \mathbb{R}^d \right\}.
+\end{align*}
+\end{block}
+\begin{alertblock}{Remark 2}
+\begin{itemize}
+\item Generalization of stochastic processes
+\item No details on Kolmogorov Existence Theorem etc. here
+\end{itemize}
+\end{alertblock}
+}
+
+\frame{\frametitle{Theory:\\Basic Definitions}
+\begin{block}{Definition 3}
+A random field $\vec{\xi}$ is called Gaussian iff $\forall k \in \mathbb{N}: \forall \{\vec{x}^{(0)}, \cdots , \vec{x}^{(k-1)} \} \subseteq T: \vec{\xi}(\vec{x}^{(0)}) =: \vec{\xi}^{(0)}, \cdots \vec{\xi}(\vec{x}^{(k-1)})=: \vec{\xi}^{(k-1)}$ are jointly normally distributed, i.e.
+\begin{align*}
+p_{\vec{\xi}^{(0)}, \cdots ,\vec{\xi}^{(k-1)}}(\vec{y}^{(0)}, \cdots \vec{y}^{(k-1)}) = &\det(2 \pi \Sigma)^{- \frac{1}{2}} \cdot \\ & \cdot \exp(-\frac{1}{2} (\vec{y}-\vec{\mu})^T \Sigma^{-1} (\vec{y}-\vec{\mu}))
+\end{align*}
+where $\Sigma$ is the $km \times km$ covariance matrix 
+\begin{align*}
+\Sigma_{m r + i,m s + j} = \text{Cov}\left(\xi^{(r)}_i,\xi^{(s)}_j \right) =: \chi_{ij}\left(\vec{x}^{(r)}, \vec{x}^{(s)} \right)
+\end{align*}
+and $\vec{\mu}$ is the $km$-dim.\ mean vector $\mu_{mr + i} = \left< \xi^{(r)}_i \right>$.
+\end{block}
+}
+
+\frame{\frametitle{Theory:\\Basic Definitions}
+\begin{alertblock}{Remark 4}
+\begin{itemize}
+\item Gaussian random fields (GRF) are completely specified by $\vec{\mu}(\vec{x})$ and $\chi \left(\vec{x}',\vec{x}\right)$ $\Longrightarrow$ easy!
+\item We will assume $\vec{\mu}(\vec{x}) \equiv 0$ wlog in the following (also necessary for isotropy) as well as $d=m$
+\item $\chi$ needs to be positive semidefinite for all $\vec{x}, \vec{x}'$ since $\vec{y}^T \chi \left(\vec{x}',\vec{x}\right) \vec{y} = \text{Var}\left(\vec{y}^T \left(\vec{\xi}' + \vec{\xi} \right) \right) \geq 0$
+\end{itemize}
+\end{alertblock}
+}
+
+\frame{\frametitle{Theory:\\Basic Definitions}
+\begin{exampleblock}{Example/Definition 5}
+\begin{itemize}
+\item White noise $\chi_{ij}\left(\vec{x}',\vec{x}\right) = \delta(x'_i-x_j)$
+\item Homogeneous (translation-invariant, stationary), isotropic ($O(n)$-invariant) and solenoidal correlation tensor:
+\begin{align*}
+\chi_{ij}(\vec{x}', \vec{x}) = \chi_{ij}(\vec{x}'-\vec{x}) = \chi_{ij}(\vec{r}) = f(r) \delta_{ij} + \frac{r f'(r)}{d-1} \left( \delta_{ij}-\frac{r_i r_j}{r^2}\right)
+\end{align*}
+\end{itemize}
+\end{exampleblock}
+
+
 }
 
 \section{Numerical implementation}
