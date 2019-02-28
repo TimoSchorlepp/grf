@@ -1,6 +1,16 @@
 \documentclass{beamer}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{mathrsfs}
+\usepackage{physics}
+\usepackage{bm}
+\usepackage{bbm}
 \usetheme[alternativetitlepage=bild]{Rub}
-
+\renewcommand{\vec}[1]{\bm{#1}}
 \begin{document}
 \title{Gaussian Random Field Generation \\for stochastic PDEs}   
 \author{Timo Schorlepp} 
@@ -12,12 +22,39 @@
 
 
 \section{Motivation} 
-\frame{\frametitle{Title} 
-.
+\frame{\frametitle{Motivation I} 
+\begin{columns}[t]
+\column{.5\textwidth}
+\centering
+\includegraphics[width=.65\textwidth]{figures/cosmogrf}\\
+\tiny{
+Vogelsberger et al. 2014, Illustris simulation}\\
+\includegraphics[width=.65\textwidth]{figures/2dns}\\
+\tiny{Murray 2017, 2$D$ stochastic NSE vorticity}
+\column{.5\textwidth}
+\centering
+\includegraphics[width=.65\textwidth]{figures/kpz}\\
+\tiny{Kuennen, Wang 2008, KPZ surface growth}\\[.2cm]
+\includegraphics[width=.65\textwidth]{figures/aquifer}\\
+\tiny{Wikimedia, aquifer sketch}
+\end{columns}
 }
 
+\frame{\frametitle{Motivation II} 
+Deterministic incompressible NSE for $\vec{u}:\mathbb{T}^n \times \mathbb{R}_+ \to \mathbb{R}^n$:
+\begin{align*}
+\partial_t \vec{u} + (\vec{u} \cdot \nabla) \vec{u} + \nabla p = \nu \Delta \vec{u}\; , \; \nabla \cdot \vec{u} = 0 
+\end{align*}
+Without forcing: 
+\begin{align*}
+\dv{}{t} \int \mathrm{d}V \; \frac{1}{2} \abs{\vec{u}}^2 = - 2 \nu \int \mathrm{d}V \; \trace((\nabla \otimes \vec{u})^T (\nabla \otimes \vec{u})) \leq -2 C \nu \int \mathrm{d}V \; \abs{\vec{u}}^2
+\end{align*}
+Gronwall: Energy decays exponentially, need forcing for interesting long-term behavior, e.g. Gaussian forcing with homogeneous, isotropic correlation matrix!\\
+\medskip
+Similarly: Stochastic heat equation
+}
 \section{Theory} 
-\frame{\frametitle{Title}
+\frame{\frametitle{Basic Definitions}
 . \\
 \pause
 .
