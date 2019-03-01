@@ -52,10 +52,13 @@ Without forcing:
 \end{align*}
 Gronwall: Energy decays exponentially, need forcing for interesting long-term behavior, e.g. Gaussian forcing with homogeneous, isotropic correlation matrix!\\
 \medskip
-Similarly: Stochastic heat equation
+Similarly: Stochastic heat equation\\
+Why Gaussian? CLT, easy, algorithms exist
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Theory} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Basic Definitions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Theory:\\Basic Definitions}
 \begin{block}{Definition 1}
@@ -71,7 +74,7 @@ A random field $\vec{\xi}$ is an indexed family of random variables
 \end{itemize}
 \end{alertblock}
 }
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Theory:\\Basic Definitions}
 \begin{block}{Definition 3}
 A random field $\vec{\xi}$ is called Gaussian iff $\forall k \in \mathbb{N}: \forall \{\vec{x}^{(0)}, \cdots , \vec{x}^{(k-1)} \} \subseteq T: \vec{\xi}(\vec{x}^{(0)}) =: \vec{\xi}^{(0)}, \cdots \vec{\xi}(\vec{x}^{(k-1)})=: \vec{\xi}^{(k-1)}$ are jointly normally distributed, i.e.
@@ -85,7 +88,7 @@ where $\Sigma$ is the $km \times km$ covariance matrix
 and $\vec{\mu}$ is the $km$-dim.\ mean vector $\mu_{mr + i} = \left< \xi^{(r)}_i \right>$.
 \end{block}
 }
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Theory:\\Basic Definitions}
 \begin{alertblock}{Remark 4}
 \begin{itemize}
@@ -95,19 +98,47 @@ and $\vec{\mu}$ is the $km$-dim.\ mean vector $\mu_{mr + i} = \left< \xi^{(r)}_i
 \end{itemize}
 \end{alertblock}
 }
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Theory:\\Basic Definitions}
 \begin{exampleblock}{Example/Definition 5}
 \begin{itemize}
-\item White noise $\chi_{ij}\left(\vec{x}',\vec{x}\right) = \delta(x'_i-x_j)$
+\item White noise $\chi_{ij}\left(\vec{x}',\vec{x}\right) = \delta(\vec{x}'-\vec{x}) \delta_{ij}$
 \item Homogeneous (translation-invariant, stationary), isotropic ($O(n)$-invariant) and solenoidal correlation tensor:
 \begin{align*}
 \chi_{ij}(\vec{x}', \vec{x}) = \chi_{ij}(\vec{x}'-\vec{x}) = \chi_{ij}(\vec{r}) = f(r) \delta_{ij} + \frac{r f'(r)}{d-1} \left( \delta_{ij}-\frac{r_i r_j}{r^2}\right)
 \end{align*}
+\item Stationary diagonal correlation $\chi_{ij}(\vec{x}',\vec{x}) = \chi_0 \exp(-\frac{\abs{\vec{x}'-\vec{x}}}{\lambda}) \delta_{ij}$
 \end{itemize}
 \end{exampleblock}
-
-
+\begin{alertblock}{Remark 6}
+We do not distinguish between correlation and covariance matrices here (they differ by a constant factor in the stationary case)
+\end{alertblock}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{How to generate stationary GRFs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Theory:\\How to generate stationary GRFs}
+\begin{exampleblock}{Example 7}
+Assuming we can generate independent $\mathcal{N}(0,1)$ samples, how do we generate vectors $\vec{\xi} \sim \mathcal{N}(0,C)$ for a given covariance $d \times d$-matrix $C$?\\
+\medskip
+Answer: $C$ is positive semidefinite, allowing for a Cholesky or eigenvalue/-vectors decomposition $C=B^T B$, so if we sample $\vec{\phi}$ with independent $\mathcal{N}(0,1)$ entries, we get
+\begin{align*}
+\left< B^T \vec{\phi} \;  (B^T \vec{\phi})^T \right> = B^T \underbrace{\left< \vec{\phi} \vec{\phi}^T \right>}_{=I_d} B = B^T B = C
+\end{align*}
+\end{exampleblock}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Theory:\\How to generate stationary GRFs}
+\begin{block}{Theorem 8}
+Let 
+\begin{align*}
+G = \left\{ \left( j_1 \frac{L_1}{N_1} , \cdots , j_d \frac{L_d}{N_d} \right) \; ; j_s \in \{ 0 , 1 , 2 , \cdots , N_s - 1   \} \right\}
+\end{align*}
+be a uniformly spaced grid in $[0,L_1] \times \cdots \times [0,L_d]$. Decomposing the overall $(N_1 \cdots N_d d) \times (N_1 \cdots N_d d)$ covariance matrix $\chi = \Lambda^T \Lambda$ of the grid and sampling $\vec{\phi} \sim \mathcal{N}(0,I_{N_1 \cdots N_d d})$ yields
+\begin{align*}
+\Lambda^T \vec{\phi} \sim \mathcal{N}(0,\chi)
+\end{align*}
+\end{block}
 }
 
 \section{Numerical implementation}
