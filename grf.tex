@@ -42,7 +42,7 @@ Vogelsberger et al. 2014, Illustris simulation}\\
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Motivation:\\Mathematical examples} 
-Deterministic incompressible NSE for $\vec{u}:\mathbb{T}^n \times \mathbb{R}_+ \to \mathbb{R}^n$:
+Deterministic incompressible NSE for $\vec{u}:\mathbb{T}^d \times \mathbb{R}_+ \to \mathbb{R}^d$:
 \begin{align*}
 \partial_t \vec{u} + (\vec{u} \cdot \nabla) \vec{u} + \nabla p = \nu \Delta \vec{u}\; , \; \nabla \cdot \vec{u} = 0 
 \end{align*}
@@ -94,7 +94,7 @@ and $\vec{\mu}$ is the $km$-dim.\ mean vector $\mu_{mr + i} = \left< \xi^{(r)}_i
 \begin{itemize}
 \item Gaussian random fields (GRF) are completely specified by $\vec{\mu}(\vec{x})$ and $\chi \left(\vec{x}',\vec{x}\right)$ $\Longrightarrow$ easy!
 \item We will assume $\vec{\mu}(\vec{x}) \equiv 0$ wlog in the following (also necessary for isotropy) as well as $d=m$
-\item $\chi$ needs to be positive semidefinite for all $\vec{x}, \vec{x}'$ since $\vec{y}^T \chi \left(\vec{x}',\vec{x}\right) \vec{y} = \text{Var}\left(\vec{y}^T \left(\vec{\xi}' + \vec{\xi} \right) \right) \geq 0$
+\item $\Sigma$ needs to be positive semidefinite for all $\vec{x}^{(0)},\cdots, \vec{x}^{(k-1)}$ since $\sum_{i,j}\vec{a}_i^T \chi \left(\vec{x}^{(i)},\vec{x}^{(j)}\right) \vec{a}_j = \text{Var}\left(\sum_{i} \vec{a}_i^T \vec{\xi}^{(i)} \right)\geq 0$\\
 \end{itemize}
 \end{alertblock}
 }

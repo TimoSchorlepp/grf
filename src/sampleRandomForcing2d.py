@@ -36,7 +36,12 @@ class RandField2d(object):
 						self.chi[2 * i * self.ny + 2* j + 1, 2 * k * self.ny + 2* m] = h[1,0]
 						self.chi[2 * i * self.ny + 2 * j, 2 * k * self.ny + 2* m + 1] = h[0,1]
 						self.chi[2 * i * self.ny + 2 * j + 1, 2 * k * self.ny + 2 * m + 1] = h[1,1]
-		self.lbda_choles = np.linalg.cholesky(self.chi)
+		
+		#~ plt.imshow(self.chi) #BTTB matrix
+		#~ plt.show()
+		
+		print np.linalg.eigvals(self.chi)
+		self.lbda_choles = np.linalg.cholesky(self.chi) #may fail for larger matrices due to negative eigenvals ~ -1e-16, even though the matrix should theoretically be positive semidef. --> need to implement eigenval dec and discard negative eigenvals
 		
 ##################################################################
 	def getFieldRealizationKSpace(self):	
@@ -372,14 +377,14 @@ if __name__ == '__main__':
 	
 	chi0 = 1.
 	l = 1.
-	xSz = np.pi
-	ySz = np.pi
-	nx = 8
-	ny = 8
+	xSz = 2*np.pi
+	ySz = 2*np.pi
+	nx = 16
+	ny = 16
 	
 	rdf = RandField2d(l,chi0,xSz,ySz,nx,ny)
 	#~ rdf.plotFieldRealizationRealSpace()
 	#~ rdf.testErrorConvergenceKSpaceSameK(10,10000,50)
 	#~ rdf.testErrorConvergenceKSpaceDifferentK(10,10000,50)
 	#~ rdf.testErrorConvergenceRealSpaceDifferentXSpectral(10,4000,50)
-	rdf.testErrorConvergenceRealSpaceDifferentXCholesky(10,4000,50)
+	#~ rdf.testErrorConvergenceRealSpaceDifferentXCholesky(10,40000,50)
