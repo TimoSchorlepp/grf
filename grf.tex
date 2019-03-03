@@ -129,12 +129,12 @@ Answer: $C$ is positive semidefinite, allowing for a Cholesky or eigenvalue/-vec
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Theory:\\How to generate stationary GRFs}
-\begin{block}{Theorem 8}
+\begin{block}{Theorem 8 (Direct method)}
 Let 
 \begin{align*}
 G = \left\{ \left( j_1 \frac{L_1}{N_1} , \cdots , j_d \frac{L_d}{N_d} \right) \; ; j_s \in \{ 0 , 1 , 2 , \cdots , N_s - 1   \} \right\}
 \end{align*}
-be a uniformly spaced grid in $[0,L_1] \times \cdots \times [0,L_d]$. Decomposing the overall $(N_1 \cdots N_d d) \times (N_1 \cdots N_d d)$ covariance matrix $\chi = \Lambda^T \Lambda$ of the grid and sampling $\vec{\phi} \sim \mathcal{N}(0,I_{N_1 \cdots N_d d})$ yields
+be a uniformly spaced grid in $[0,L_1] \times \cdots \times [0,L_d]$. Decomposing the overall $(N_1 \cdots N_d d) \times (N_1 \cdots N_d d)$ grid covariance matrix $\chi = \Lambda^T \Lambda$ of the grid and sampling $\vec{\phi} \sim \mathcal{N}(0,I_{N_1 \cdots N_d d})$ yields
 \begin{align*}
 \Lambda^T \vec{\phi} \sim \mathcal{N}(0,\chi)
 \end{align*}

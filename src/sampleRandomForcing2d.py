@@ -40,8 +40,12 @@ class RandField2d(object):
 		#~ plt.imshow(self.chi) #BTTB matrix
 		#~ plt.show()
 		
-		print np.linalg.eigvals(self.chi)
-		self.lbda_choles = np.linalg.cholesky(self.chi) #may fail for larger matrices due to negative eigenvals ~ -1e-16, even though the matrix should theoretically be positive semidef. --> need to implement eigenval dec and discard negative eigenvals
+		D,V = np.linalg.eigh(self.chi)
+		print "Maximum eigenvalue of grid covariance matrix ", np.amax(D)
+		print "Minimum eigenvalue of grid covariance matrix ", np.amin(D)
+		V[:,D<1e-14] = 0
+		D[D<1e-14] = 0.
+		self.lbda_direct = np.dot(V,np.sqrt(np.diag(D)))
 		
 ##################################################################
 	def getFieldRealizationKSpace(self):	
@@ -52,9 +56,9 @@ class RandField2d(object):
 		xihat = self.getFieldRealizationKSpace()
 		return np.sqrt(2) * np.fft.ifftn(xihat,axes=(0,1)).real/self.dx/self.dy*np.sqrt(self.xSz)*np.sqrt(self.ySz)
 	
-	def getFieldRealizationRealSpaceCholesky(self):
+	def getFieldRealizationRealSpaceDirect(self):
 		xi = np.random.randn(self.nx*self.ny*2)
-		xi = np.dot(self.lbda_choles, xi)
+		xi = np.dot(self.lbda_direct, xi)
 		return np.reshape(xi,(self.nx,self.ny,2))
 ##################################################################
 	def testErrorConvergenceRealSpaceDifferentXSpectral(self,n1,n2,n):
@@ -261,10 +265,10 @@ class RandField2d(object):
 		print " "
 		return
 ##################################################################
-	def testErrorConvergenceRealSpaceDifferentXCholesky(self,n1,n2,n):
+	def testErrorConvergenceRealSpaceDifferentXDirect(self,n1,n2,n):
 		
 		print "--------------------------------------------------"
-		print "Testing convergence of correlation function between one fixed point and all others in real space using cholesky"
+		print "Testing convergence of correlation function between one fixed point and all others in real space using direct method"
 		print "Total number of samples that will be generated: ", n2
 		print "--------------------------------------------------"
 		
@@ -296,14 +300,14 @@ class RandField2d(object):
 			if i == 0:
 				
 				for l in range(num[i]):
-					xi = self.getFieldRealizationRealSpaceCholesky()
+					xi = self.getFieldRealizationRealSpaceDirect()
 					for j in range(self.nx):
 						for k in range(self.ny):
 							correlRealizations[j,k,:] += np.outer(xi[j,k,:],xi[idxX,idxY,:]).reshape(4)
 			else:
 				
 				for l in range(num[i]-num[i-1]):
-					xi = self.getFieldRealizationRealSpaceCholesky()
+					xi = self.getFieldRealizationRealSpaceDirect()
 					for j in range(self.nx):
 						for k in range(self.ny):
 							correlRealizations[j,k,:] += np.outer(xi[j,k,:],xi[idxX,idxY,:]).reshape(4)
@@ -329,7 +333,7 @@ class RandField2d(object):
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
 		#plt.title(r'Maximum relative error of covariance $e$ between any point and origin' + '\n' + r'in real space, 2d, for different sample numbers $n$')
-		plt.savefig('RealSpaceError2dCholesky.pdf')
+		plt.savefig('RealSpaceError2dDirect.pdf')
 		plt.close()
 		
 		
@@ -337,7 +341,7 @@ class RandField2d(object):
 		return
 ##################################################################
 	def plotFieldRealizationRealSpace(self):
-		xi = self.getFieldRealizationRealSpaceCholesky()
+		xi = self.getFieldRealizationRealSpaceDirect()
 		Xmgrd,Ymgrd = np.meshgrid(self.X,self.Y)
 		plt.figure()
 		plt.pcolormesh(Xmgrd,Ymgrd,np.sqrt(xi[:,:,0]**2+xi[:,:,1]**2),shading='gouraud')
@@ -379,12 +383,12 @@ if __name__ == '__main__':
 	l = 1.
 	xSz = 2*np.pi
 	ySz = 2*np.pi
-	nx = 16
-	ny = 16
+	nx = 8
+	ny = 8
 	
 	rdf = RandField2d(l,chi0,xSz,ySz,nx,ny)
 	#~ rdf.plotFieldRealizationRealSpace()
 	#~ rdf.testErrorConvergenceKSpaceSameK(10,10000,50)
 	#~ rdf.testErrorConvergenceKSpaceDifferentK(10,10000,50)
 	#~ rdf.testErrorConvergenceRealSpaceDifferentXSpectral(10,4000,50)
-	#~ rdf.testErrorConvergenceRealSpaceDifferentXCholesky(10,40000,50)
+	rdf.testErrorConvergenceRealSpaceDifferentXDirect(10,4000,50)

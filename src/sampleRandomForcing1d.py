@@ -12,18 +12,23 @@ class RandField1d(object):
 		self.nx = nx #number of gridpoints
 		self.dx = xSz/nx #grid spacing
 		self.X = np.linspace(0.,xSz-self.dx,nx)
-		
 		self.KX = 2*np.pi*np.fft.fftfreq(self.nx, self.dx) #2*pi needed due to different convention in np.fft
+		self.Mmax = 33 # number of neigbour intervals considered for periodically wrapped correlation
+		self.M = np.linspace(-(self.Mmax-1)/2,(self.Mmax-1)/2,self.Mmax)
 		self.lbda_spec = np.sqrt(self.getChiHat(self.KX)) #decomposition in Fourier space
 		
-		self.chi = np.zeros((self.nx,self.nx)) #real space non-periodic correlation for cholesky
+		self.chi = np.zeros((self.nx,self.nx)) #real space non-periodic correlation for direct method
 		for i in range(self.nx):
 			for j in range(self.nx):
 				self.chi[i,j] = self.getChi(self.X[i]-self.X[j])
-		self.lbda_choles = np.linalg.cholesky(self.chi)
 		
-		self.Mmax = 33 # number of neigbour intervals considered for periodically wrapped correlation
-		self.M = np.linspace(-(self.Mmax-1)/2,(self.Mmax-1)/2,self.Mmax)
+		D,V = np.linalg.eigh(self.chi) # decomposition chi = V diag(D) V.T
+		print "Maximum eigenvalue of grid covariance matrix ", np.amax(D)
+		print "Minimum eigenvalue of grid covariance matrix ", np.amin(D)
+		V[:,D<1e-14] = 0
+		D[D<1e-14] = 0.
+		self.lbda_direct = np.dot(V,np.sqrt(np.diag(D)))
+		
 ##################################################################
 	def getFieldRealizationKSpace(self):	
 		return 1/np.sqrt(2) * self.lbda_spec * (np.random.randn(self.nx) + 1j * np.random.randn(self.nx))
@@ -32,8 +37,8 @@ class RandField1d(object):
 		xi = self.getFieldRealizationKSpace()
 		return np.fft.ifft(xi).real/self.dx*np.sqrt(2*self.xSz)
 	
-	def getFieldRealizationRealSpaceCholesky(self):
-		return np.dot(self.lbda_choles,np.random.randn(self.nx))
+	def getFieldRealizationRealSpaceDirect(self):
+		return np.dot(self.lbda_direct,np.random.randn(self.nx))
 ##################################################################
 	def testErrorConvergenceRealSpaceSpectral(self,n1,n2,n):
 		# compute correlation between all points
@@ -160,13 +165,13 @@ class RandField1d(object):
 		print " "
 		return	
 ##################################################################
-	def testErrorConvergenceRealSpaceCholesky(self,n1,n2,n):
+	def testErrorConvergenceRealSpaceDirect(self,n1,n2,n):
 		# compute correlation between all points
 		# n1 and n2 are the start and end numbers of realizations which are sampled
 		# n is the number of intermediate steps were the error is computed
 		
 		print "--------------------------------------------------"
-		print "Testing convergence of correlation function in real space generated with Cholesky method"
+		print "Testing convergence of correlation function in real space generated with direct method"
 		print "Total number of samples that will be generated: ", n2
 		print "--------------------------------------------------"
 		
@@ -195,12 +200,12 @@ class RandField1d(object):
 			if i == 0:
 				
 				for l in range(num[i]):
-					xi = self.getFieldRealizationRealSpaceCholesky()
+					xi = self.getFieldRealizationRealSpaceDirect()
 					correlRealizations += np.outer(xi,xi)
 			else:
 				
 				for l in range(num[i]-num[i-1]):
-					xi = self.getFieldRealizationRealSpaceCholesky()
+					xi = self.getFieldRealizationRealSpaceDirect()
 					correlRealizations += np.outer(xi,xi)
 							
 			errMatrix = abs(correlRealizations/num[i] - correlExact)
@@ -225,14 +230,14 @@ class RandField1d(object):
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
 		#plt.title(r'Maximum relative error of covariance $e$ between any two points' + '\n' + r'in real space, 1d, for different sample numbers $n$')
-		plt.savefig('RealSpaceError1dCholesky.pdf')
+		plt.savefig('RealSpaceError1dDirect.pdf')
 		plt.close()
 		
 		print " "
 		return
 ##################################################################	
 	def plotFieldRealizationRealSpace(self):
-		xi = self.getFieldRealizationRealSpaceCholesky()
+		xi = self.getFieldRealizationRealSpaceDirect()
 		plt.figure()
 		plt.plot(self.X,xi)
 		plt.xlabel(r"$x$")
@@ -258,4 +263,4 @@ if __name__ == '__main__':
 	rdf.plotFieldRealizationRealSpace()
 	#~ rdf.testErrorConvergenceKSpace(10,1000000,60)
 	#~ rdf.testErrorConvergenceRealSpaceSpectral(10,100000,60)
-	rdf.testErrorConvergenceRealSpaceCholesky(10,10000,60)
+	rdf.testErrorConvergenceRealSpaceDirect(10,10000,60)
