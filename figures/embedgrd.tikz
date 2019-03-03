@@ -1,0 +1,22 @@
+\begin{tikzpicture}
+\tikzset{dot/.style={fill=black,circle}}
+    \foreach \i in {0,...,14} {
+        \draw [thin,gray] (\i,0) -- (\i,14)  node [above] at (\i,14) {$\i$};
+    }
+    \foreach \i in {0,...,14} {
+        \draw [thin,gray] (0,\i) -- (14,\i) node [left] at (0,14 - \i) {$\i$};
+    }
+    \foreach \i in {0,...,7} {
+        \draw [very thick,red] (\i,7) -- (\i,14)  node [above] at (\i,14) {$ $};
+    }
+    \foreach \i in {7,...,14} {
+        \draw [very thick,red] (0,\i) -- (7,\i) node [left] at (0,14 - \i) {$ $};
+    }
+
+\node[dot] at (2,12){};
+\node[dot] at (10,2){};
+\draw [very thick] (2,12)--(10,2);
+\draw [very thick, dash dot] (2,14)--(2,2);
+\draw [very thick, dash dot] (10,0)--(10,2);
+\draw [very thick, dash dot] (0,2)--(14,2);
+\end{tikzpicture}

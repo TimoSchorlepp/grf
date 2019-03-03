@@ -15,8 +15,16 @@ class RandField1d(object):
 		self.KX = 2*np.pi*np.fft.fftfreq(self.nx, self.dx) #2*pi needed due to different convention in np.fft
 		self.Mmax = 33 # number of neigbour intervals considered for periodically wrapped correlation
 		self.M = np.linspace(-(self.Mmax-1)/2,(self.Mmax-1)/2,self.Mmax)
-		self.lbda_spec = np.sqrt(self.getChiHat(self.KX)) #decomposition in Fourier space
 		
+		self.init_lbda_spec()
+		self.init_lbda_direct()
+		
+##################################################################
+	def init_lbda_spec(self):
+		self.lbda_spec = np.sqrt(self.getChiHat(self.KX)) #decomposition in Fourier space
+		return
+		
+	def init_lbda_direct(self):
 		self.Sigma = np.zeros((self.nx,self.nx)) #real space non-periodic correlation for direct method
 		for i in range(self.nx):
 			for j in range(self.nx):
@@ -28,7 +36,7 @@ class RandField1d(object):
 		V[:,D<1e-14] = 0
 		D[D<1e-14] = 0.
 		self.lbda_direct = np.dot(V,np.sqrt(np.diag(D)))
-		
+		return
 ##################################################################
 	def getFieldRealizationKSpace(self):	
 		return 1/np.sqrt(2) * self.lbda_spec * (np.random.randn(self.nx) + 1j * np.random.randn(self.nx))

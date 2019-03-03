@@ -1,6 +1,8 @@
 \documentclass{beamer}
 \usepackage{multicol}
 \usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{tikzscale}
 \usepackage[english]{babel}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -145,10 +147,21 @@ Decomposing this matrix becomes prohibitively expensive really fast!
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Theory:\\How to generate stationary GRFs}
+\begin{exampleblock}{Example 10}
 Grid covariance matrix for stationary $\chi$ on $2D$ $8 \times 8$ grid:
 \centering
-\includegraphics[width=.5\textwidth]{figures/bttb}\\
-(Block Toeplitz matrix)
+\includegraphics[width=.45\textwidth]{figures/bttb}\\
+Block Toeplitz matrix (BTM)
+\end{exampleblock}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Theory:\\How to generate stationary GRFs}
+\begin{exampleblock}{Example 10 (continued)}
+Idea: Embed the BTM into a block \textit{circulant} matrix (BCM) by extending the grid with periodic boundary conditions!
+\centering{
+\includegraphics[width=0.5\textwidth]{figures/embedgrd}
+}
+\end{exampleblock}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Numerical implementation}

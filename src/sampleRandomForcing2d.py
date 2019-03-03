@@ -21,11 +21,18 @@ class RandField2d(object):
 		self.Mmax = 7
 		self.M = np.linspace(-(self.Mmax-1)/2,(self.Mmax-1)/2,self.Mmax)
 		
+		self.init_lbda_spec()
+		self.init_lbda_direct()
+		
+##################################################################
+	def init_lbda_spec(self):
 		self.lbda_spec = np.zeros((self.nx,self.ny,2,2))
 		for i in range(nx):
 			for j in range(ny):
 				self.lbda_spec[i,j,:,:] = self.getLambda(self.KX[i],self.KY[j])
-		
+		return
+	
+	def init_lbda_direct(self):
 		self.Sigma = np.zeros((self.nx*self.ny*2,self.nx*self.ny*2))
 		for i in range(self.nx):
 			for j in range(self.ny):
@@ -37,14 +44,14 @@ class RandField2d(object):
 						self.Sigma[2 * i * self.ny + 2 * j, 2 * k * self.ny + 2* m + 1] = h[0,1]
 						self.Sigma[2 * i * self.ny + 2 * j + 1, 2 * k * self.ny + 2 * m + 1] = h[1,1]
 		
-		#~ plt.imshow(self.Sigma) #BTTB matrix
-		#~ plt.gca().xaxis.set_major_locator(plt.NullLocator())
-		#~ plt.gca().yaxis.set_major_locator(plt.NullLocator())
-		#~ plt.gca().set_axis_off()
-		#~ plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
-		#~ plt.margins(0,0)
-		#~ plt.savefig("bttb.pdf", bbox_inches = 'tight', pad_inches = 0)
-		#~ plt.show()
+		plt.imshow(self.Sigma) #BTTB matrix
+		plt.gca().xaxis.set_major_locator(plt.NullLocator())
+		plt.gca().yaxis.set_major_locator(plt.NullLocator())
+		plt.gca().set_axis_off()
+		plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
+		plt.margins(0,0)
+		plt.savefig("bttb.pdf", bbox_inches = 'tight', pad_inches = 0)
+		plt.show()
 		
 		D,V = np.linalg.eigh(self.Sigma)
 		print "Maximum eigenvalue of grid covariance matrix ", np.amax(D)
@@ -52,7 +59,7 @@ class RandField2d(object):
 		V[:,D<1e-14] = 0
 		D[D<1e-14] = 0.
 		self.lbda_direct = np.dot(V,np.sqrt(np.diag(D)))
-		
+		return
 ##################################################################
 	def getFieldRealizationKSpace(self):	
 		xihat = 1/np.sqrt(2) * (np.random.randn(self.nx,self.ny,2) + 1j * np.random.randn(self.nx,self.ny,2))
@@ -386,7 +393,7 @@ class RandField2d(object):
 if __name__ == '__main__':
 	
 	chi0 = 1.
-	l = 1.
+	l = 3.
 	xSz = 2*np.pi
 	ySz = 2*np.pi
 	nx = 8
