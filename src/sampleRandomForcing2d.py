@@ -23,6 +23,7 @@ class RandField2d(object):
 		
 		self.init_lbda_spec()
 		self.init_lbda_direct()
+		self.init_lbda_embedded()
 		
 ##################################################################
 	def init_lbda_spec(self):
@@ -33,33 +34,79 @@ class RandField2d(object):
 		return
 	
 	def init_lbda_direct(self):
-		self.Sigma = np.zeros((self.nx*self.ny*2,self.nx*self.ny*2))
+		Sigma = np.zeros((self.nx*self.ny*2,self.nx*self.ny*2))
 		for i in range(self.nx):
 			for j in range(self.ny):
 				for k in range(self.nx):
 					for m in range(self.ny):
 						h = self.getChi(self.X[i]-self.X[k], self.Y[j]-self.Y[m])
-						self.Sigma[2 * i * self.ny + 2 * j, 2 * k * self.ny + 2 * m] = h[0,0]
-						self.Sigma[2 * i * self.ny + 2* j + 1, 2 * k * self.ny + 2* m] = h[1,0]
-						self.Sigma[2 * i * self.ny + 2 * j, 2 * k * self.ny + 2* m + 1] = h[0,1]
-						self.Sigma[2 * i * self.ny + 2 * j + 1, 2 * k * self.ny + 2 * m + 1] = h[1,1]
+						Sigma[2 * i * self.ny + 2 * j, 2 * k * self.ny + 2 * m] = h[0,0]
+						Sigma[2 * i * self.ny + 2* j + 1, 2 * k * self.ny + 2* m] = h[1,0]
+						Sigma[2 * i * self.ny + 2 * j, 2 * k * self.ny + 2* m + 1] = h[0,1]
+						Sigma[2 * i * self.ny + 2 * j + 1, 2 * k * self.ny + 2 * m + 1] = h[1,1]
 		
-		plt.imshow(self.Sigma) #BTTB matrix
-		plt.gca().xaxis.set_major_locator(plt.NullLocator())
-		plt.gca().yaxis.set_major_locator(plt.NullLocator())
-		plt.gca().set_axis_off()
-		plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
-		plt.margins(0,0)
-		plt.savefig("bttb.pdf", bbox_inches = 'tight', pad_inches = 0)
-		plt.show()
+		#~ plt.imshow(Sigma) #BTTB matrix
+		#~ plt.gca().xaxis.set_major_locator(plt.NullLocator())
+		#~ plt.gca().yaxis.set_major_locator(plt.NullLocator())
+		#~ plt.gca().set_axis_off()
+		#~ plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
+		#~ plt.margins(0,0)
+		#~ plt.savefig("bttb.pdf", bbox_inches = 'tight', pad_inches = 0)
+		#~ plt.show()
 		
-		D,V = np.linalg.eigh(self.Sigma)
+		D,V = np.linalg.eigh(Sigma)
 		print "Maximum eigenvalue of grid covariance matrix ", np.amax(D)
 		print "Minimum eigenvalue of grid covariance matrix ", np.amin(D)
 		V[:,D<1e-14] = 0
 		D[D<1e-14] = 0.
 		self.lbda_direct = np.dot(V,np.sqrt(np.diag(D)))
 		return
+	
+	def init_lbda_embedded(self):
+		#search for positive definite embedding, need to optimize the search step size, value given in paper is unnecessarily large !!!
+		
+		mxmin_exp = int(np.ceil(np.log(2 * self.nx - 2)/np.log(3))) # minimum grid size (3**mxmin_exp) in x direction to embed into
+		mymin_exp = int(np.ceil(np.log(2 * self.ny - 2)/np.log(3)))
+		mxmax_exp = mxmin_exp + 10 # maximum grid size which will be tried in order to find a positive definite embedding
+		mymax_exp = mymin_exp + 10
+		
+		for mx_exp in range(mxmin_exp, mxmax_exp):
+			for my_exp in range(mymin_exp, mymax_exp): # loop until we find a positive definite embedding
+				mx = int(3**mx_exp)
+				my = int(3**my_exp)
+				Xperio = np.linspace(0., (mx -1)* self.dx, mx)
+				Yperio = np.linspace(0., (my -1)* self.dy, my)
+				
+				Sigma = np.zeros((mx*my*2,mx*my*2))
+				print Sigma.shape
+				for i in range(mx):
+					for j in range(my):
+						for k in range(mx):
+							for m in range(my):
+								# need to find position differences modulo periodic boundaries!
+								xdist = np.array([Xperio[i]-Xperio[k],Xperio[i]-Xperio[k] - mx * self.dx , Xperio[i]-Xperio[k] + mx * self.dx])
+								x = xdist[np.argmin(abs(xdist))]
+								ydist = np.array([Yperio[j]-Yperio[m],Yperio[j]-Yperio[m] - mx * self.dx , Yperio[j]-Yperio[m] + mx * self.dx])
+								y = ydist[np.argmin(abs(ydist))]
+								
+								h = self.getChi(x, y)
+								Sigma[2 * i * my + 2 * j, 2 * k * my + 2 * m] = h[0,0]
+								Sigma[2 * i * my + 2* j + 1, 2 * k * my + 2* m] = h[1,0]
+								Sigma[2 * i * my + 2 * j, 2 * k * my + 2* m + 1] = h[0,1]
+								Sigma[2 * i * my + 2 * j + 1, 2 * k * my + 2 * m + 1] = h[1,1]
+				
+				D,V = np.linalg.eigh(Sigma)
+				print "Maximum eigenvalue of periodic grid covariance matrix ", np.amax(D)
+				print "Minimum eigenvalue of periodic grid covariance matrix ", np.amin(D)
+				
+				if np.amin(D) > 0 or -np.amax(D)/np.amin(D)< 1e-8:
+					# stopping condition is arbitrarily chosen so far
+					V[:,D<1e-14] = 0
+					D[D<1e-14] = 0.
+					self.lbda_embedded = np.dot(V,np.sqrt(np.diag(D)))
+					return
+				
+				
 ##################################################################
 	def getFieldRealizationKSpace(self):	
 		xihat = 1/np.sqrt(2) * (np.random.randn(self.nx,self.ny,2) + 1j * np.random.randn(self.nx,self.ny,2))
