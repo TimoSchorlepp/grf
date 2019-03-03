@@ -1,10 +1,10 @@
 \begin{tikzpicture}
 \tikzset{dot/.style={fill=black,circle}}
     \foreach \i in {0,...,14} {
-        \draw [thin,gray] (\i,0) -- (\i,14)  node [above] at (\i,14) {$\i$};
+        \draw [thin,gray] (\i,0) -- (\i,14)  node [above] at (\i,14) {$ $};
     }
     \foreach \i in {0,...,14} {
-        \draw [thin,gray] (0,\i) -- (14,\i) node [left] at (0,14 - \i) {$\i$};
+        \draw [thin,gray] (0,\i) -- (14,\i) node [left] at (0,14 - \i) {$ $};
     }
     \foreach \i in {0,...,7} {
         \draw [very thick,red] (\i,7) -- (\i,14)  node [above] at (\i,14) {$ $};

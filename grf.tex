@@ -8,6 +8,7 @@
 \usepackage{amssymb}
 \usepackage{mathtools}
 \usepackage{mathrsfs}
+\usepackage{xcolor}
 \usepackage{physics}
 \usepackage{bm}
 \usepackage{bbm}
@@ -156,12 +157,22 @@ Block Toeplitz matrix (BTM)
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Theory:\\How to generate stationary GRFs}
-\begin{exampleblock}{Example 10 (continued)}
-Idea: Embed the BTM into a block \textit{circulant} matrix (BCM) by extending the grid with periodic boundary conditions!
-\centering{
-\includegraphics[width=0.5\textwidth]{figures/embedgrd}
+\begin{exampleblock}{Example 10 (continued, circulant embedding)}
+Idea: Embed the BTM into a block \textit{circulant} matrix (BCM) by extending the grid with periodic boundary conditions. Goal: Use properties of BCMs (eigenvalues may be found via FFT of the individual $d \times d$ blocks)\\
+\centerline{
+\includegraphics[width=0.44\textwidth]{figures/embedgrd}
 }
 \end{exampleblock}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Theory:\\How to generate stationary GRFs}
+\begin{alertblock}{Remark 10 (circulant embedding)}
+\begin{itemize}
+\item The extended covariance matrix need not be positive (semi)definite!\\
+$\Longrightarrow$ Grid may need to be very large  
+\item No further details here, check the literature list on last slide if you are interested in circulant embedding methods
+\end{itemize}
+\end{alertblock}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Numerical implementation}

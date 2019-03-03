@@ -45,13 +45,13 @@ class RandField2d(object):
 						Sigma[2 * i * self.ny + 2 * j, 2 * k * self.ny + 2* m + 1] = h[0,1]
 						Sigma[2 * i * self.ny + 2 * j + 1, 2 * k * self.ny + 2 * m + 1] = h[1,1]
 		
-		#~ plt.imshow(Sigma) #BTTB matrix
+		#~ plt.imshow(Sigma) #BT matrix
 		#~ plt.gca().xaxis.set_major_locator(plt.NullLocator())
 		#~ plt.gca().yaxis.set_major_locator(plt.NullLocator())
 		#~ plt.gca().set_axis_off()
 		#~ plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
 		#~ plt.margins(0,0)
-		#~ plt.savefig("bttb.pdf", bbox_inches = 'tight', pad_inches = 0)
+		#~ plt.savefig("bt.pdf", bbox_inches = 'tight', pad_inches = 0)
 		#~ plt.show()
 		
 		D,V = np.linalg.eigh(Sigma)
@@ -94,6 +94,16 @@ class RandField2d(object):
 								Sigma[2 * i * my + 2* j + 1, 2 * k * my + 2* m] = h[1,0]
 								Sigma[2 * i * my + 2 * j, 2 * k * my + 2* m + 1] = h[0,1]
 								Sigma[2 * i * my + 2 * j + 1, 2 * k * my + 2 * m + 1] = h[1,1]
+				
+				
+				#~ plt.imshow(Sigma) #BC matrix
+				#~ plt.gca().xaxis.set_major_locator(plt.NullLocator())
+				#~ plt.gca().yaxis.set_major_locator(plt.NullLocator())
+				#~ plt.gca().set_axis_off()
+				#~ plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
+				#~ plt.margins(0,0)
+				#~ plt.savefig("bc.pdf", bbox_inches = 'tight', pad_inches = 0)
+				#~ plt.show()
 				
 				D,V = np.linalg.eigh(Sigma)
 				print "Maximum eigenvalue of periodic grid covariance matrix ", np.amax(D)
