@@ -26,21 +26,27 @@ class RandField2d(object):
 			for j in range(ny):
 				self.lbda_spec[i,j,:,:] = self.getLambda(self.KX[i],self.KY[j])
 		
-		self.chi = np.zeros((self.nx*self.ny*2,self.nx*self.ny*2))
+		self.Sigma = np.zeros((self.nx*self.ny*2,self.nx*self.ny*2))
 		for i in range(self.nx):
 			for j in range(self.ny):
 				for k in range(self.nx):
 					for m in range(self.ny):
 						h = self.getChi(self.X[i]-self.X[k], self.Y[j]-self.Y[m])
-						self.chi[2 * i * self.ny + 2 * j, 2 * k * self.ny + 2 * m] = h[0,0]
-						self.chi[2 * i * self.ny + 2* j + 1, 2 * k * self.ny + 2* m] = h[1,0]
-						self.chi[2 * i * self.ny + 2 * j, 2 * k * self.ny + 2* m + 1] = h[0,1]
-						self.chi[2 * i * self.ny + 2 * j + 1, 2 * k * self.ny + 2 * m + 1] = h[1,1]
+						self.Sigma[2 * i * self.ny + 2 * j, 2 * k * self.ny + 2 * m] = h[0,0]
+						self.Sigma[2 * i * self.ny + 2* j + 1, 2 * k * self.ny + 2* m] = h[1,0]
+						self.Sigma[2 * i * self.ny + 2 * j, 2 * k * self.ny + 2* m + 1] = h[0,1]
+						self.Sigma[2 * i * self.ny + 2 * j + 1, 2 * k * self.ny + 2 * m + 1] = h[1,1]
 		
-		#~ plt.imshow(self.chi) #BTTB matrix
+		#~ plt.imshow(self.Sigma) #BTTB matrix
+		#~ plt.gca().xaxis.set_major_locator(plt.NullLocator())
+		#~ plt.gca().yaxis.set_major_locator(plt.NullLocator())
+		#~ plt.gca().set_axis_off()
+		#~ plt.subplots_adjust(top = 1, bottom = 0, right = 1, left = 0, hspace = 0, wspace = 0)
+		#~ plt.margins(0,0)
+		#~ plt.savefig("bttb.pdf", bbox_inches = 'tight', pad_inches = 0)
 		#~ plt.show()
 		
-		D,V = np.linalg.eigh(self.chi)
+		D,V = np.linalg.eigh(self.Sigma)
 		print "Maximum eigenvalue of grid covariance matrix ", np.amax(D)
 		print "Minimum eigenvalue of grid covariance matrix ", np.amin(D)
 		V[:,D<1e-14] = 0
@@ -391,4 +397,4 @@ if __name__ == '__main__':
 	#~ rdf.testErrorConvergenceKSpaceSameK(10,10000,50)
 	#~ rdf.testErrorConvergenceKSpaceDifferentK(10,10000,50)
 	#~ rdf.testErrorConvergenceRealSpaceDifferentXSpectral(10,4000,50)
-	rdf.testErrorConvergenceRealSpaceDifferentXDirect(10,4000,50)
+	#~ rdf.testErrorConvergenceRealSpaceDifferentXDirect(10,4000,50)

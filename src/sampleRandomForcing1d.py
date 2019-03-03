@@ -17,12 +17,12 @@ class RandField1d(object):
 		self.M = np.linspace(-(self.Mmax-1)/2,(self.Mmax-1)/2,self.Mmax)
 		self.lbda_spec = np.sqrt(self.getChiHat(self.KX)) #decomposition in Fourier space
 		
-		self.chi = np.zeros((self.nx,self.nx)) #real space non-periodic correlation for direct method
+		self.Sigma = np.zeros((self.nx,self.nx)) #real space non-periodic correlation for direct method
 		for i in range(self.nx):
 			for j in range(self.nx):
-				self.chi[i,j] = self.getChi(self.X[i]-self.X[j])
+				self.Sigma[i,j] = self.getChi(self.X[i]-self.X[j])
 		
-		D,V = np.linalg.eigh(self.chi) # decomposition chi = V diag(D) V.T
+		D,V = np.linalg.eigh(self.Sigma) # decomposition chi = V diag(D) V.T
 		print "Maximum eigenvalue of grid covariance matrix ", np.amax(D)
 		print "Minimum eigenvalue of grid covariance matrix ", np.amin(D)
 		V[:,D<1e-14] = 0

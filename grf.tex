@@ -134,7 +134,7 @@ Let
 \begin{align*}
 G = \left\{ \left( j_1 \frac{L_1}{N_1} , \cdots , j_d \frac{L_d}{N_d} \right) \; ; j_s \in \{ 0 , 1 , 2 , \cdots , N_s - 1   \} \right\}
 \end{align*}
-be a uniformly spaced grid in $[0,L_1] \times \cdots \times [0,L_d]$. Decomposing the overall $(N_1 \cdots N_d d) \times (N_1 \cdots N_d d)$ grid covariance matrix $\chi = \Lambda^T \Lambda$ of the grid and sampling $\vec{\phi} \sim \mathcal{N}(0,I_{N_1 \cdots N_d d})$ yields
+be a uniformly spaced grid in $[0,L_1] \times \cdots \times [0,L_d]$. Decomposing the overall $(N_1 \cdots N_d d) \times (N_1 \cdots N_d d)$ grid covariance matrix $\Sigma = \Lambda^T \Lambda$ of the grid and sampling $\vec{\phi} \sim \mathcal{N}(0,I_{N_1 \cdots N_d d})$ yields
 \begin{align*}
 \Lambda^T \vec{\phi} \sim \mathcal{N}(0,\chi)
 \end{align*}
@@ -143,8 +143,16 @@ be a uniformly spaced grid in $[0,L_1] \times \cdots \times [0,L_d]$. Decomposin
 Decomposing this matrix becomes prohibitively expensive really fast!
 \end{alertblock}
 }
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Theory:\\How to generate stationary GRFs}
+Grid covariance matrix for stationary $\chi$ on $2D$ $8 \times 8$ grid:
+\centering
+\includegraphics[width=.5\textwidth]{figures/bttb}\\
+(Block Toeplitz matrix)
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Numerical implementation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Title}
 .
 }
@@ -173,4 +181,16 @@ bla
 \end{alertblock}
 }
 
+\section{Literature}
+\frame{\frametitle{Literature:\\Recommendations for further reading}
+\begin{itemize}
+\item A.\ Yaglom, Correlation Theory of Stationary and Related Random Functions, Springer Series in Statistics, 1987.
+\item P.\ Abrahamsen, A Review of Gaussian Random Fields and Correlation Functions, Norsk Regnesentral/Norwegian Computing Center, 1997.
+\item G.\ Chan, A.\ T.\ A.\ Wood, Simulation of stationary Gaussian vector fields, Statistics and Computing, 1999.
+\item A. Lang, J. Potthoff, Fast simulation of Gaussian random fields, Monte Carlo Methods and Applications, 2011.
+
+\end{itemize}
+}
+
 \end{document}
+ 
