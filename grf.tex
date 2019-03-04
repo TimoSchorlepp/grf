@@ -13,6 +13,7 @@
 \usepackage{bm}
 \usepackage{bbm}
 \usetheme[alternativetitlepage=bild]{Rub}
+\newcommand{\I}{\mathbbm{i}}
 \renewcommand{\vec}[1]{\bm{#1}}
 \begin{document}
 \title{Gaussian Random Field Generation \\for stochastic PDEs}   
@@ -56,7 +57,7 @@ Without forcing:
 Gronwall: Energy decays exponentially, need forcing for interesting long-term behavior, e.g. Gaussian forcing with homogeneous, isotropic correlation matrix!\\
 \medskip
 Similarly: Stochastic heat equation\\
-Why Gaussian? CLT, easy, algorithms exist
+Why Gaussian? CLT, easy, approximation, algorithms exist
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Theory} 
@@ -175,6 +176,71 @@ $\Longrightarrow$ Grid may need to be very large
 \end{alertblock}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Theory:\\How to generate stationary GRFs}
+\begin{block}{Theorem 11 (Spectral method, continuous FT)}
+Let $\vec{\xi}$ be a stationary GRF on $\mathbb{R}^d$ with correlation matrix $\chi$. Denote by $\vec{W}$ the $d$-dimensional white noise $\langle \vec{W}(\vec{x}') \vec{W}(\vec{x})^T \rangle = I_d \; \delta(\vec{x}'-\vec{x})$, and by $\mathscr{F}$ the Fourier transform (FT) on $\mathbb{R}^d$. Decompose the correlation in Fourier space as $\hat{\chi}(\vec{k}) := \mathscr{F} \chi(\vec{k}) = \Lambda(\vec{k}) \Lambda^\dagger(\vec{k})$. Then, the following statements hold:\\
+\begin{enumerate}
+\item $\vec{\psi} := (\mathscr{F}^{-1} \Lambda \mathscr{F}) \;\vec{W} \stackrel{\mathcal{D}}{=} \vec{\xi}$.
+\item $\hat{\vec{W}}$ has covariance $\left< \hat{\vec{W}}(\vec{k}')\hat{\vec{W}}(\vec{k})^\dagger \right> = (2 \pi)^d I_d \; \delta(\vec{k}' -\vec{k})$ and pseudo-covariance $\left< \hat{\vec{W}}(\vec{k}') \hat{\vec{W}}(\vec{k})^T \right> = (2 \pi)^d I_d \; \delta(\vec{k}' + \vec{k})$.
+\item $\hat{\vec{\xi}}$ has covariance $\left< \hat{\vec{\xi}}(\vec{k}')\hat{\vec{\xi}}(\vec{k})^\dagger \right> = (2 \pi)^d \hat{\chi}(\vec{k}) \; \delta(\vec{k}' -\vec{k})$ and pseudo-covariance $\left< \hat{\vec{\xi}}(\vec{k}') \hat{\vec{\xi}}(\vec{k})^T \right> = (2 \pi)^d \hat{\chi}(\vec{k}) \; \delta(\vec{k}' + \vec{k})$.
+\end{enumerate}
+\end{block}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Theory:\\How to generate stationary GRFs}
+\small
+\textbf{Proof}: (1) Standard computation
+\begin{align*}
+&\langle \vec{\psi}(\vec{x}') \vec{\psi}(\vec{x})^\dagger \rangle = \biggl< \frac{1}{(2 \pi)^{d}} \int \mathrm{d}^d k' e^{\I \vec{k}' \cdot \vec{x}'} \Lambda(\vec{k}') \int \mathrm{d}^d y' e^{-\I \vec{k}' \cdot \vec{y}'} \vec{W}(\vec{y}') \\
+& \quad \cdot \frac{1}{(2 \pi)^d} \int \mathrm{d}^d y \vec{W}(\vec{y})^T e^{\I \vec{k} \cdot \vec{y}} \int \mathrm{d}^d k \; \Lambda(\vec{k})^\dagger e^{- \I \vec{k} \cdot \vec{x}} \biggr> \\
+&= \frac{1}{(2 \pi)^{2d}} \int \mathrm{d}^d k' \int \mathrm{d}^d k  \int \mathrm{d}^d y'  \int \mathrm{d}^d y 
+\; e^{\I \vec{k}' \cdot (\vec{x}'-\vec{y}')+ \I \vec{k} \cdot (\vec{y} - \vec{x})}\\
+& \quad \cdot \Lambda(\vec{k}') \underbrace{\langle \vec{W}(\vec{y}')   \vec{W}(\vec{y})^T \rangle}_{=I_d \delta(\vec{y}'-\vec{y})} \Lambda(\vec{k})^\dagger\\
+&= \frac{1}{(2 \pi)^{d}} \int \mathrm{d}^d k' \int \mathrm{d}^d k   \underbrace{\frac{1}{(2 \pi)^{d}} \int \mathrm{d}^d y' e^{\I (\vec{k} - \vec{k}') \cdot \vec{y}'}}_{= \delta (\vec{k} - \vec{k}')}
+\; e^{\I \vec{k}' \cdot \vec{x}' - \I \vec{k} \cdot \vec{x}}
+\Lambda(\vec{k}') \Lambda(\vec{k})^\dagger \\
+&= \frac{1}{(2 \pi)^{d}} \int \mathrm{d}^d k 
+\; e^{\I \vec{k} \cdot (\vec{x}' - \vec{x})}
+\underbrace{\Lambda(\vec{k}) \Lambda(\vec{k})^\dagger}_{= \hat{\chi}(\vec{k})} = \chi(\vec{x}'-\vec{x})
+\end{align*}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Theory:\\How to generate stationary GRFs}
+\small
+\textbf{Proof}: (2) (and (3) analogously)
+\begin{align*}
+\left< \hat{\vec{W}}(\vec{k}')\hat{\vec{W}}(\vec{k})^\dagger \right> =
+\int \mathrm{d}^d x' \int\mathrm{d}^d x e^{-\I \vec{k}' \cdot \vec{x}'} e^{\I \vec{k} \cdot \vec{x}}  \langle \vec{W}(\vec{x}') \vec{W}(\vec{x})^T \rangle = (2 \pi)^d I_d \; \delta(\vec{k}' -\vec{k})
+\end{align*}
+$\vec{W}$ is real $\Longrightarrow$ $\left< \hat{\vec{W}}(\vec{k}')\hat{\vec{W}}(\vec{k})^T \right> =(2 \pi)^d I_d \; \delta(\vec{k}' +\vec{k})$\\
+\normalsize
+\begin{alertblock}{Remark 12}
+Theorem 11 shows that the Fourier modes of a stationary GRF are "decoupled" (modulo symmetry, due to $\vec{\xi}$ being real). Thus, instead of decomposing a $(N_1 \cdots N_d d) \times (N_1 \cdots N_d d)$ matrix, we need to decompose (analytically, so far) a single $d \times d$ matrix.
+\end{alertblock}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Theory:\\How to generate stationary GRFs}
+\begin{exampleblock}{Example 13}
+Homogeneous, isotropic, solenoidal correlation tensor
+\begin{align*}
+\chi_{ij}(\vec{x}', \vec{x}) = \chi_{ij}(\vec{x}'-\vec{x}) = \chi_{ij}(\vec{r}) = f(r) \delta_{ij} + \frac{r f'(r)}{d-1} \left( \delta_{ij}-\frac{r_i r_j}{r^2}\right)
+\end{align*}
+with $f(r) := \chi_0 \, e^{-r^2/2\lambda^2}$ for $d=2$:
+\begin{align*}
+\chi(\vec r) &= \frac{\chi_0}{\lambda^2} \,
+e^{-\frac{r^2}{2\lambda^2}} \, \left(\begin{array}{cc}
+\lambda^2 - y^2 & x y \\
+x y & \lambda^2 - x^2
+\end{array}\right)\\ 
+\Longrightarrow \hat{\chi}(\vec{k}) &= 2\pi \chi_0 \lambda^4 e^{-\frac{1}{2} k^2 \lambda^2} \,
+\left(\begin{array}{cc}
+k_y^2 & -k_x k_y\\
+-k_x k_y & k_x^2
+\end{array}\right)
+\end{align*}
+\end{exampleblock}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Numerical implementation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Title}
@@ -211,8 +277,8 @@ bla
 \item A.\ Yaglom, Correlation Theory of Stationary and Related Random Functions, Springer Series in Statistics, 1987.
 \item P.\ Abrahamsen, A Review of Gaussian Random Fields and Correlation Functions, Norsk Regnesentral/Norwegian Computing Center, 1997.
 \item G.\ Chan, A.\ T.\ A.\ Wood, Simulation of stationary Gaussian vector fields, Statistics and Computing, 1999.
-\item A. Lang, J. Potthoff, Fast simulation of Gaussian random fields, Monte Carlo Methods and Applications, 2011.
-
+\item A.\ Lang, J.\ Potthoff, Fast simulation of Gaussian random fields, Monte Carlo Methods and Applications, 2011.
+\item J.\ Carron, M.\ Wolk, I.\ Szapudi, On fast generation of cosmological random fields, MNRAS, 2014.
 \end{itemize}
 }
 
