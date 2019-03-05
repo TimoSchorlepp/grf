@@ -243,8 +243,16 @@ k_y^2 & -k_x k_y\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Numerical implementation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\frame{\frametitle{Title}
-.
+\frame{\frametitle{Numerical implementation}
+What happens/changes if we want to apply the spectral method to generate GRF realizations on a grid in a bounded domain numerically, using the discrete Fourier transform (DFT)?\\
+\medskip
+\begin{enumerate}
+\item Sample discretized white noise: $\left< \vec{W}_i \vec{W}_j^T \right> = \frac{1}{\Delta_d}I_d \delta_{ij}\; ; \; \Delta_d := \frac{L_1 \cdots L_d}{N_1 \cdots N_d}$
+\item Apply FFT to obtain discretized version of $\hat{\vec{W}}$ (alternatively: start in Fourier space, need to make sure though that symmetry is fulfilled!)
+\item Multiply by $\Lambda(\vec{k})$ which was calculated analytically via continuous FT on $\mathbb{R}^d$ (!)
+\item Apply inverse DFT + normalization
+\end{enumerate}
+\textcolor{red}{$\Longrightarrow$ Conceptually, we start in Fourier space and impose the correlation $\hat{\chi}$ there! What kind of correlation do we obtain in real space with this method?}
 }
 
 
