@@ -284,7 +284,6 @@ class RandField2d(object):
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
 		plt.show()
-		plt.savefig('KSpaceError2dSameK.pdf')
 		plt.close()
 		
 		print " "
