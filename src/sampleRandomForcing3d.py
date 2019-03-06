@@ -113,7 +113,6 @@ class RandField3d(object):
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
 		plt.show()
-		plt.savefig('RealSpaceError3d.pdf')
 		plt.close()
 		
 		print " "
@@ -183,7 +182,6 @@ class RandField3d(object):
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
 		plt.show()
-		plt.savefig('KSpaceError3dSameK.pdf')
 		plt.close()
 		
 		print " "
@@ -247,7 +245,6 @@ class RandField3d(object):
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
 		plt.show()
-		plt.savefig('KSpaceError3dDifferentK.pdf')
 		plt.close()
 		
 		print " "

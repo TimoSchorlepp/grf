@@ -117,7 +117,6 @@ class RandField1d(object):
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
 		plt.show()
-		plt.savefig('RealSpaceError1dSpectral.pdf')
 		plt.close()
 		
 		print " "
@@ -179,7 +178,6 @@ class RandField1d(object):
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
 		plt.show()
-		plt.savefig('KSpaceError1d.pdf')
 		plt.close()
 		
 		print " "
@@ -247,7 +245,6 @@ class RandField1d(object):
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
 		plt.show()
-		plt.savefig('RealSpaceError1dDirect.pdf')
 		plt.close()
 		
 		print " "

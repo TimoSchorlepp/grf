@@ -212,7 +212,6 @@ class RandField2d(object):
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
 		plt.show()
-		plt.savefig('RealSpaceError2dSpectral.pdf')
 		plt.close()
 		
 		
@@ -347,7 +346,6 @@ class RandField2d(object):
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
 		plt.show()
-		plt.savefig('KSpaceError2dDifferentK.pdf')
 		plt.close()
 		
 		print " "
@@ -421,7 +419,6 @@ class RandField2d(object):
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
 		plt.show()
-		plt.savefig('RealSpaceError2dDirect.pdf')
 		plt.close()
 		
 		
