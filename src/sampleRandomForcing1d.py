@@ -6,61 +6,63 @@ class RandField1d(object):
 	
 	def __init__(self,l,chi0,xSz,nx):
 		
-		self.l = float(l) #correlation length, see getChi() for definition of covariance
-		self.chi0 = float(chi0) #correlation strength
+		self.l = float(l) # correlation length, see getChi() for definition of covariance
+		self.chi0 = float(chi0) # correlation strength
 		self.xSz = float(xSz) # simulation on interval [0,xSz]
-		self.nx = nx #number of gridpoints
-		self.dx = xSz/nx #grid spacing
+		self.nx = nx # number of gridpoints
+		self.dx = xSz/nx # grid spacing
 		self.X = np.linspace(0.,xSz-self.dx,nx)
-		self.KX = 2*np.pi*np.fft.fftfreq(self.nx, self.dx) #2*pi needed due to different convention in np.fft
+		self.KX = 2*np.pi*np.fft.fftfreq(self.nx, self.dx) # 2*pi needed due to different convention in np.fft
 		self.Mmax = 33 # number of neigbour intervals considered for periodically wrapped correlation
-		self.M = np.linspace(-(self.Mmax-1)/2,(self.Mmax-1)/2,self.Mmax)
+		self.M = np.linspace(-(self.Mmax-1)/2,(self.Mmax-1)/2,self.Mmax) # array for shifted copies of chi
 		
 		self.init_lbda_spec()
-		self.init_lbda_direct()
+		#~ self.init_lbda_direct()
 		
 ##################################################################
 	def init_lbda_spec(self):
+		# initialize lambda in Fourier space by taking the square root of chihat
 		self.lbda_spec = np.sqrt(self.getChiHat(self.KX)) #decomposition in Fourier space
 		return
 	
 	def init_lbda_direct(self):
-		self.Sigma = np.zeros((self.nx,self.nx)) #real space non-periodic correlation for direct method
+		# direct method for comparison, decompose grid covariance (non-periodic) sigma into lbda * lbda.T
+		self.Sigma = np.zeros((self.nx,self.nx)) #real space non-periodic correlation for direct method, SHOULD be positive definite
 		for i in range(self.nx):
 			for j in range(self.nx):
 				self.Sigma[i,j] = self.getChi(self.X[i]-self.X[j])
 		
-		D,V = np.linalg.eigh(self.Sigma) # decomposition chi = V diag(D) V.T
-		#~ print "Maximum eigenvalue of grid covariance matrix ", np.amax(D)
-		#~ print "Minimum eigenvalue of grid covariance matrix ", np.amin(D)
-		V[:,D<1e-14] = 0
+		D,V = np.linalg.eigh(self.Sigma) # eigendecomposition chi = V diag(D) V.T
+		print "Maximum eigenvalue of grid covariance matrix ", np.amax(D)
+		print "Minimum eigenvalue of grid covariance matrix ", np.amin(D) # check whether theres a significant amount of negative eigenvalues
+		V[:,D<1e-14] = 0 # set eigenvectors belonging to small/negative eigenvalues to zero
 		D[D<1e-14] = 0.
 		self.lbda_direct = np.dot(V,np.sqrt(np.diag(D)))
 		return
 ##################################################################
 	def getFieldRealizationKSpace(self):
-		W = 1./np.sqrt(self.dx) * np.random.randn(self.nx)	
-		return np.sqrt(2*np.pi) * self.lbda_spec * np.fft.fft(W, norm='ortho') 
+		W = 1./np.sqrt(self.dx) * np.random.randn(self.nx) # sample discretized white noise in real space
+		return np.sqrt(2*np.pi) * self.lbda_spec * np.fft.fft(W, norm='ortho') # multiply by sqrt(2 pi) for analogy with continuous case, no other purpose..
 	
 	def getFieldRealizationRealSpaceSpectral(self):
 		xi = self.getFieldRealizationKSpace()
-		return np.fft.ifft(xi,norm='ortho').real/np.sqrt(2*np.pi)
+		return np.fft.ifft(xi,norm='ortho').real/np.sqrt(2*np.pi) # remove the 2 pi factor again..
 	
 	def getFieldRealizationRealSpaceDirect(self):
-		return np.dot(self.lbda_direct,np.random.randn(self.nx))
+		return np.dot(self.lbda_direct,np.random.randn(self.nx)) 
 ##################################################################
 	def testErrorConvergenceRealSpaceSpectral(self,n1,n2,n):
-		# compute correlation between all points
-		# n1 and n2 are the start and end numbers of realizations which are sampled
-		# n is the number of intermediate steps were the error is computed
+		# compute correlation between all points using n2 samples
+		# n1 and n2 are the start and end numbers of realizations where outout is produced
+		# n is the number of intermediate steps were the error of the correlation is computed
 		
 		print "--------------------------------------------------"
 		print "Testing convergence of correlation function in real space generated with spectral method"
 		print "Total number of samples that will be generated: ", n2
 		print "--------------------------------------------------"
 		
-		num = np.logspace(np.log10(n1),np.log10(n2),n,dtype = int)
-		err = np.zeros(n)
+		num = np.logspace(np.log10(n1),np.log10(n2),n,dtype = int) # logspace for equidistant spacing in loglog plot
+		err = np.zeros(n) # maximum error at each output step
 		
 		correlRealizations = np.zeros((self.nx,self.nx))
 		correlExact = np.zeros((self.nx,self.nx))
@@ -94,6 +96,7 @@ class RandField1d(object):
 							
 			errMatrix = abs(correlRealizations/num[i] - correlExact)
 			
+			# uncomment for relative error instead of absolute error
 			#~ for j in range(self.nx):
 				#~ for k in range(self.nx):
 					#~ if correlExact[j,k] > 1e-8:
@@ -113,7 +116,7 @@ class RandField1d(object):
 		plt.loglog(num,err,'.',c='blue')
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
-		#plt.title(r'Maximum relative error of covariance $e$ between any two points' + '\n' + r'in real space, 1d, for different sample numbers $n$')
+		plt.show()
 		plt.savefig('RealSpaceError1dSpectral.pdf')
 		plt.close()
 		
@@ -135,7 +138,6 @@ class RandField1d(object):
 		
 		for j in range(self.nx):
 			correlExact[j,j] = 2*np.pi/self.dx  * self.getChiHat(self.KX[j])
-			#~ correlExact[j,j] = 1./self.dx 
 		
 		plt.imshow(correlExact)
 		plt.colorbar()
@@ -167,8 +169,6 @@ class RandField1d(object):
 			
 			err[i] = np.amax(errMatrix)
 		
-		print errMatrix
-		
 		plt.imshow(correlRealizations.real/n2)
 		plt.colorbar()
 		plt.show()
@@ -178,7 +178,7 @@ class RandField1d(object):
 		plt.loglog(num,err,'.',c='blue')
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
-		#plt.title(r'Maximum relative error of covariance $e$ between any two points' + '\n' + r'in Fourier space, 1d, for different sample numbers $n$')
+		plt.show()
 		plt.savefig('KSpaceError1d.pdf')
 		plt.close()
 		
@@ -186,9 +186,6 @@ class RandField1d(object):
 		return	
 ##################################################################
 	def testErrorConvergenceRealSpaceDirect(self,n1,n2,n):
-		# compute correlation between all points
-		# n1 and n2 are the start and end numbers of realizations which are sampled
-		# n is the number of intermediate steps were the error is computed
 		
 		print "--------------------------------------------------"
 		print "Testing convergence of correlation function in real space generated with direct method"
@@ -249,7 +246,7 @@ class RandField1d(object):
 		plt.loglog(num,err,'.',c='blue')
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
-		#plt.title(r'Maximum relative error of covariance $e$ between any two points' + '\n' + r'in real space, 1d, for different sample numbers $n$')
+		plt.show()
 		plt.savefig('RealSpaceError1dDirect.pdf')
 		plt.close()
 		
@@ -257,7 +254,7 @@ class RandField1d(object):
 		return
 ##################################################################	
 	def plotFieldRealizationRealSpace(self):
-		xi = self.getFieldRealizationRealSpaceDirect()
+		xi = self.getFieldRealizationRealSpaceSpectral()
 		plt.figure()
 		plt.plot(self.X,xi)
 		plt.xlabel(r"$x$")
@@ -277,10 +274,10 @@ if __name__ == '__main__':
 	chi0 = 1.
 	l = 1.
 	xSz = 4*np.pi
-	nx = 16
+	nx = 32
 
 	rdf = RandField1d(l,chi0,xSz,nx)
-	#~ rdf.plotFieldRealizationRealSpace()
-	#~ rdf.testErrorConvergenceKSpace(10,100000,60)
-	rdf.testErrorConvergenceRealSpaceSpectral(10,100000,60)
+	rdf.plotFieldRealizationRealSpace()
+	#~ rdf.testErrorConvergenceKSpace(10,10000,60)
+	#~ rdf.testErrorConvergenceRealSpaceSpectral(10,10000,60)
 	#~ rdf.testErrorConvergenceRealSpaceDirect(10,10000,60)

@@ -22,15 +22,17 @@ class RandField2d(object):
 		self.M = np.linspace(-(self.Mmax-1)/2,(self.Mmax-1)/2,self.Mmax)
 		
 		self.init_lbda_spec()
-		self.init_lbda_direct()
-		self.init_lbda_embedded()
+		#~ self.init_lbda_direct()
+		#~ self.init_lbda_embedded()
 		
 ##################################################################
 	def init_lbda_spec(self):
 		self.lbda_spec = np.zeros((self.nx,self.ny,2,2))
+		
 		for i in range(nx):
 			for j in range(ny):
 				self.lbda_spec[i,j,:,:] = self.getLambda(self.KX[i],self.KY[j])
+				
 		return
 	
 	def init_lbda_direct(self):
@@ -118,13 +120,14 @@ class RandField2d(object):
 				
 				
 ##################################################################
-	def getFieldRealizationKSpace(self):	
-		xihat = 1/np.sqrt(2) * (np.random.randn(self.nx,self.ny,2) + 1j * np.random.randn(self.nx,self.ny,2))
-		return np.multiply(self.lbda_spec,xihat[:,:,np.newaxis,:]).sum(axis=3)
-	
+	def getFieldRealizationKSpace(self):
+		xi = 1./np.sqrt(self.dx * self.dy) * np.random.randn(self.nx,self.ny,2)
+		xihat = np.fft.fftn(xi,axes=(0,1),norm='ortho')
+		return (2 * np.pi) * np.multiply(self.lbda_spec,xihat[:,:,np.newaxis,:]).sum(axis=3)
+
 	def getFieldRealizationRealSpaceSpectral(self):
 		xihat = self.getFieldRealizationKSpace()
-		return np.sqrt(2) * np.fft.ifftn(xihat,axes=(0,1)).real/self.dx/self.dy*np.sqrt(self.xSz)*np.sqrt(self.ySz)
+		return 1./(2*np.pi) * np.fft.ifftn(xihat,axes=(0,1),norm='ortho').imag
 	
 	def getFieldRealizationRealSpaceDirect(self):
 		xi = np.random.randn(self.nx*self.ny*2)
@@ -162,10 +165,10 @@ class RandField2d(object):
 		
 		correlNorm = np.sqrt(np.sum(np.square(abs(correlExact)),axis=2))
 		
-		#~ plt.imshow(correlNorm,origin='lower')
-		#~ plt.colorbar()
-		#~ plt.show()
-		#~ plt.close()
+		plt.imshow(correlNorm)
+		plt.colorbar()
+		plt.show()
+		plt.close()
 		
 		for i in range(n):
 			
@@ -197,12 +200,18 @@ class RandField2d(object):
 			
 			err[i] = np.amax(errMatrix)
 		
+		
+		plt.imshow(np.sqrt(np.sum(np.square(abs(correlRealizations/num[i])),axis=2)))
+		plt.colorbar()
+		plt.show()
+		plt.close()
+		
 		plt.figure()
 		plt.loglog(num,err,c='blue')
 		plt.loglog(num,err,'.',c='blue')
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
-		#plt.title(r'Maximum relative error of covariance $e$ between any point and origin' + '\n' + r'in real space, 2d, for different sample numbers $n$')
+		plt.show()
 		plt.savefig('RealSpaceError2dSpectral.pdf')
 		plt.close()
 		
@@ -225,10 +234,14 @@ class RandField2d(object):
 		
 		for j in range(self.nx):
 			for k in range(self.ny):
-				xihat = self.getChiHat(self.KX[j],self.KY[k])
+				xihat = (2 * np.pi)**2 /(self.dx * self.dy) * self.getChiHat(self.KX[j],self.KY[k])
 				correlExact[j,k,:] = xihat.reshape(4)
 				
 		correlNorm = np.sqrt(np.sum(np.square(abs(correlExact)),axis=2))
+		
+		plt.imshow(correlNorm)
+		plt.colorbar()
+		plt.show()
 		
 		for i in range(n):
 			
@@ -261,12 +274,17 @@ class RandField2d(object):
 			
 			err[i] = np.amax(errMatrix)
 		
+		print errMatrix
+		plt.imshow(np.sqrt(np.sum(np.square(abs(correlRealizations/num[i])),axis=2)))
+		plt.colorbar()
+		plt.show()
+		
 		plt.figure()
 		plt.loglog(num,err,c='blue')
 		plt.loglog(num,err,'.',c='blue')
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
-		#plt.title(r'Maximum relative error of covariance $e$ at each k' + '\n' + r'in Fourier space, 2d, for different sample numbers $n$')
+		plt.show()
 		plt.savefig('KSpaceError2dSameK.pdf')
 		plt.close()
 		
@@ -287,7 +305,7 @@ class RandField2d(object):
 		correlRealizations = np.zeros((self.nx,self.ny,4),dtype=complex)
 		correlExact = np.zeros((self.nx,self.ny,4))
 		
-		xihat = self.getChiHat(self.KX[-1],self.KY[-1])
+		xihat = (2 * np.pi)**2 /(self.dx * self.dy) * self.getChiHat(self.KX[-1],self.KY[-1])
 		correlExact[-1,-1,:] = xihat.reshape(4)
 		
 		correlNorm = np.sqrt(np.sum(np.square(abs(correlExact)),axis=2))
@@ -328,7 +346,7 @@ class RandField2d(object):
 		plt.loglog(num,err,'.',c='blue')
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
-		#plt.title(r'Maximum relative error of covariance $e$ between each k and fixed k' + '\n' + r'in Fourier space, 2d, for different sample numbers $n$')
+		plt.show()
 		plt.savefig('KSpaceError2dDifferentK.pdf')
 		plt.close()
 		
@@ -402,7 +420,7 @@ class RandField2d(object):
 		plt.loglog(num,err,'.',c='blue')
 		plt.xlabel(r'$n$')
 		plt.ylabel(r'$e$')
-		#plt.title(r'Maximum relative error of covariance $e$ between any point and origin' + '\n' + r'in real space, 2d, for different sample numbers $n$')
+		plt.show()
 		plt.savefig('RealSpaceError2dDirect.pdf')
 		plt.close()
 		
@@ -411,7 +429,7 @@ class RandField2d(object):
 		return
 ##################################################################
 	def plotFieldRealizationRealSpace(self):
-		xi = self.getFieldRealizationRealSpaceDirect()
+		xi = self.getFieldRealizationRealSpaceSpectral()
 		Xmgrd,Ymgrd = np.meshgrid(self.X,self.Y)
 		plt.figure()
 		plt.pcolormesh(Xmgrd,Ymgrd,np.sqrt(xi[:,:,0]**2+xi[:,:,1]**2),shading='gouraud')
@@ -450,15 +468,15 @@ class RandField2d(object):
 if __name__ == '__main__':
 	
 	chi0 = 1.
-	l = 3.
+	l = 1.
 	xSz = 2*np.pi
 	ySz = 2*np.pi
-	nx = 8
-	ny = 8
+	nx = 32
+	ny = 32
 	
 	rdf = RandField2d(l,chi0,xSz,ySz,nx,ny)
-	#~ rdf.plotFieldRealizationRealSpace()
-	#~ rdf.testErrorConvergenceKSpaceSameK(10,10000,50)
+	rdf.plotFieldRealizationRealSpace()
+	#~ rdf.testErrorConvergenceKSpaceSameK(10,100000,50)
 	#~ rdf.testErrorConvergenceKSpaceDifferentK(10,10000,50)
 	#~ rdf.testErrorConvergenceRealSpaceDifferentXSpectral(10,4000,50)
 	#~ rdf.testErrorConvergenceRealSpaceDifferentXDirect(10,4000,50)
