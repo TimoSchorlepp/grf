@@ -23,7 +23,7 @@ class RandField1d(object):
 	def init_lbda_spec(self):
 		self.lbda_spec = np.sqrt(self.getChiHat(self.KX)) #decomposition in Fourier space
 		return
-		
+	
 	def init_lbda_direct(self):
 		self.Sigma = np.zeros((self.nx,self.nx)) #real space non-periodic correlation for direct method
 		for i in range(self.nx):
@@ -31,19 +31,20 @@ class RandField1d(object):
 				self.Sigma[i,j] = self.getChi(self.X[i]-self.X[j])
 		
 		D,V = np.linalg.eigh(self.Sigma) # decomposition chi = V diag(D) V.T
-		print "Maximum eigenvalue of grid covariance matrix ", np.amax(D)
-		print "Minimum eigenvalue of grid covariance matrix ", np.amin(D)
+		#~ print "Maximum eigenvalue of grid covariance matrix ", np.amax(D)
+		#~ print "Minimum eigenvalue of grid covariance matrix ", np.amin(D)
 		V[:,D<1e-14] = 0
 		D[D<1e-14] = 0.
 		self.lbda_direct = np.dot(V,np.sqrt(np.diag(D)))
 		return
 ##################################################################
-	def getFieldRealizationKSpace(self):	
-		return 1/np.sqrt(2) * self.lbda_spec * (np.random.randn(self.nx) + 1j * np.random.randn(self.nx))
+	def getFieldRealizationKSpace(self):
+		W = 1./np.sqrt(self.dx) * np.random.randn(self.nx)	
+		return np.sqrt(2*np.pi) * self.lbda_spec * np.fft.fft(W, norm='ortho') 
 	
 	def getFieldRealizationRealSpaceSpectral(self):
 		xi = self.getFieldRealizationKSpace()
-		return np.fft.ifft(xi).real/self.dx*np.sqrt(2*self.xSz)
+		return np.fft.ifft(xi,norm='ortho').real/np.sqrt(2*np.pi)
 	
 	def getFieldRealizationRealSpaceDirect(self):
 		return np.dot(self.lbda_direct,np.random.randn(self.nx))
@@ -68,12 +69,12 @@ class RandField1d(object):
 			for k in range(self.nx):
 				correlExact[j,k] = np.sum(self.getChi(self.X[j] - self.X[k] + self.M * self.xSz))
 		
-		#~ plt.plot(correlExact[0,:])
-		#~ plt.show()
+		plt.plot(correlExact[0,:])
+		plt.show()
 		
-		#~ plt.imshow(correlExact)
-		#~ plt.colorbar()
-		#~ plt.show()
+		plt.imshow(correlExact)
+		plt.colorbar()
+		plt.show()
 		
 		for i in range(n):
 			
@@ -100,12 +101,12 @@ class RandField1d(object):
 						
 			err[i] = np.amax(errMatrix)
 		
-		#~ plt.plot(correlRealizations[0,:]/n2)
-		#~ plt.show()
+		plt.plot(correlRealizations[0,:]/n2)
+		plt.show()
 		
-		#~ plt.imshow(correlRealizations/n2)
-		#~ plt.colorbar()
-		#~ plt.show()
+		plt.imshow(correlRealizations/n2)
+		plt.colorbar()
+		plt.show()
 		
 		plt.figure()
 		plt.loglog(num,err,c='blue')
@@ -133,7 +134,12 @@ class RandField1d(object):
 		correlExact = np.zeros((self.nx,self.nx))
 		
 		for j in range(self.nx):
-			correlExact[j,j] = self.getChiHat(self.KX[j])
+			correlExact[j,j] = 2*np.pi/self.dx  * self.getChiHat(self.KX[j])
+			#~ correlExact[j,j] = 1./self.dx 
+		
+		plt.imshow(correlExact)
+		plt.colorbar()
+		plt.show()
 		
 		for i in range(n):
 			
@@ -160,6 +166,12 @@ class RandField1d(object):
 						#~ errMatrix[j,k] /= correlExact[j,k]
 			
 			err[i] = np.amax(errMatrix)
+		
+		print errMatrix
+		
+		plt.imshow(correlRealizations.real/n2)
+		plt.colorbar()
+		plt.show()
 		
 		plt.figure()
 		plt.loglog(num,err,c='blue')
@@ -263,12 +275,12 @@ class RandField1d(object):
 if __name__ == '__main__':
 	
 	chi0 = 1.
-	l = 0.5
-	xSz = 2*np.pi
-	nx = 32
+	l = 1.
+	xSz = 4*np.pi
+	nx = 16
 
 	rdf = RandField1d(l,chi0,xSz,nx)
-	rdf.plotFieldRealizationRealSpace()
-	#~ rdf.testErrorConvergenceKSpace(10,1000000,60)
-	#~ rdf.testErrorConvergenceRealSpaceSpectral(10,100000,60)
-	rdf.testErrorConvergenceRealSpaceDirect(10,10000,60)
+	#~ rdf.plotFieldRealizationRealSpace()
+	#~ rdf.testErrorConvergenceKSpace(10,100000,60)
+	rdf.testErrorConvergenceRealSpaceSpectral(10,100000,60)
+	#~ rdf.testErrorConvergenceRealSpaceDirect(10,10000,60)

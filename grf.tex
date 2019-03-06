@@ -167,7 +167,7 @@ Idea: Embed the BTM into a block \textit{circulant} matrix (BCM) by extending th
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Theory:\\How to generate stationary GRFs}
-\begin{alertblock}{Remark 10 (circulant embedding)}
+\begin{alertblock}{Remark 11 (circulant embedding)}
 \begin{itemize}
 \item The extended covariance matrix need not be positive (semi)definite!\\
 $\Longrightarrow$ Grid may need to be very large  
@@ -177,7 +177,7 @@ $\Longrightarrow$ Grid may need to be very large
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Theory:\\How to generate stationary GRFs}
-\begin{block}{Theorem 11 (Spectral method, continuous FT)}
+\begin{block}{Theorem 12 (Spectral method, continuous FT)}
 Let $\vec{\xi}$ be a stationary GRF on $\mathbb{R}^d$ with correlation matrix $\chi$. Denote by $\vec{W}$ the $d$-dimensional white noise $\langle \vec{W}(\vec{x}') \vec{W}(\vec{x})^T \rangle = I_d \; \delta(\vec{x}'-\vec{x})$, and by $\mathscr{F}$ the Fourier transform (FT) on $\mathbb{R}^d$. Decompose the correlation in Fourier space as $\hat{\chi}(\vec{k}) := \mathscr{F} \chi(\vec{k}) = \Lambda(\vec{k}) \Lambda^\dagger(\vec{k})$. Then, the following statements hold:\\
 \begin{enumerate}
 \item $\vec{\psi} := (\mathscr{F}^{-1} \Lambda \mathscr{F}) \;\vec{W} \stackrel{\mathcal{D}}{=} \vec{\xi}$.
@@ -214,13 +214,13 @@ Let $\vec{\xi}$ be a stationary GRF on $\mathbb{R}^d$ with correlation matrix $\
 \end{align*}
 $\vec{W}$ is real $\Longrightarrow$ $\left< \hat{\vec{W}}(\vec{k}')\hat{\vec{W}}(\vec{k})^T \right> =(2 \pi)^d I_d \; \delta(\vec{k}' +\vec{k})$\\
 \normalsize
-\begin{alertblock}{Remark 12}
+\begin{alertblock}{Remark 13}
 Theorem 11 shows that the Fourier modes of a stationary GRF are "decoupled" (modulo symmetry, due to $\vec{\xi}$ being real). Thus, instead of decomposing a $(N_1 \cdots N_d d) \times (N_1 \cdots N_d d)$ matrix, we need to decompose (analytically, so far) a single $d \times d$ matrix.
 \end{alertblock}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Theory:\\How to generate stationary GRFs}
-\begin{exampleblock}{Example 13}
+\begin{exampleblock}{Example 14}
 Homogeneous, isotropic, solenoidal correlation tensor
 \begin{align*}
 \chi_{ij}(\vec{x}', \vec{x}) = \chi_{ij}(\vec{x}'-\vec{x}) = \chi_{ij}(\vec{r}) = f(r) \delta_{ij} + \frac{r f'(r)}{d-1} \left( \delta_{ij}-\frac{r_i r_j}{r^2}\right)
@@ -244,42 +244,56 @@ k_y^2 & -k_x k_y\\
 \section{Numerical implementation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Numerical implementation}
-What happens/changes if we want to apply the spectral method to generate GRF realizations on a grid in a bounded domain numerically, using the discrete Fourier transform (DFT)?\\
-\medskip
+What happens/changes if we want to apply the spectral method to generate GRF realizations on a grid in a bounded domain numerically, using the discrete fast Fourier transform (FFT)?\\
 \begin{enumerate}
 \item Sample discretized white noise: $\left< \vec{W}_i \vec{W}_j^T \right> = \frac{1}{\Delta_d}I_d \delta_{ij}\; ; \; \Delta_d := \frac{L_1 \cdots L_d}{N_1 \cdots N_d}$
 \item Apply FFT to obtain discretized version of $\hat{\vec{W}}$ (alternatively: start in Fourier space, need to make sure though that symmetry is fulfilled!)
-\item Multiply by $\Lambda(\vec{k})$ which was calculated analytically via continuous FT on $\mathbb{R}^d$ (!)
-\item Apply inverse DFT + normalization
+\item Multiply by $(2 \pi)^{d/2}\Lambda(\vec{k})$ which was calculated analytically via continuous FT on $\mathbb{R}^d$ (!)
+\item Apply inverse FFT$/(2 \pi)^{d/2}$
 \end{enumerate}
-\textcolor{red}{$\Longrightarrow$ Conceptually, we start in Fourier space and impose the correlation $\hat{\chi}$ there! What kind of correlation do we obtain in real space with this method?}
+\textcolor{red}{$\Longrightarrow$ Conceptually, we start in Fourier space and impose the correlation $\hat{\chi}$ there! What kind of correlation do we obtain in real space if we use the discrete FT?}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Numerical implementation}
+For simplicity: Consider $d=1$ and let
+\begin{align*}
+\varphi(x) = \sum_{m= -\infty}^{\infty} \chi(x + m L)
+\end{align*} 
+be the $L$-periodic summation of the initial correlation function $\chi$. Formally computing the Fourier transform yields
+\begin{align*}
+\hat{\varphi}(k) 
+= \hat{\chi}(k) \sum_{m= -\infty}^{\infty} e^{\I k m L} = \frac{2 \pi}{L} \hat{\chi}(k) \sum_{m= -\infty}^{\infty} \delta(k - m\frac{2 \pi}{L})
+\end{align*}
+Applying the inverse FT:
+\begin{align*}
+\varphi(x) = \frac{1}{L} \sum_{m= -\infty}^{\infty} \hat{\chi} \left( m \frac{2 \pi}{L} \right) e^{2 \pi \I \frac{m}{L} x}
+\end{align*}
 }
 
-
+\frame{\frametitle{Numerical implementation}
+Using our algorithm (and notation $k_p = \frac{2 \pi}{L} p$):
+\begin{align*}
+\left<\xi_r \xi_s^\dagger \right> 
+&= \frac{1}{N^2} \sum_{j,j',p,p'=0}^{N-1} e^{-\frac{2 \pi \I}{N} ( l j - p' j' + r p -  s p')} \Lambda(k_p) \underbrace{\left< W_p W_{p'}^T\right>}_{= N/L \; \delta_{jj'}} \Lambda(k_{p'})^\dagger \\
+&= \frac{1}{N L} \sum_{j,p,p'=0}^{N-1} e^{-\frac{2 \pi \I}{N} j(p-p')} e^{\frac{2 \pi \I}{N}(sp'-rp)} \Lambda(k_p) \Lambda(k_{p'})^\dagger\\
+&= \frac{1}{L} \sum_{p,p'=0}^{N-1} \delta_{pp'} e^{\frac{2 \pi \I}{N}(sp'-rp)}  \Lambda(k_p) \Lambda(k_{p'})^\dagger\\
+&= \frac{1}{L} \sum_{p=0}^{N-1} \hat{\chi}(k_p) e^{\frac{2 \pi \I}{N} p (s-r)} \approx \varphi\left((s-r)\frac{L}{N}\right) = \varphi(x_s - x_r)
+\end{align*}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results} 
 \frame{\frametitle{Title}
 .
 }
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Title}
-
-\begin{block}{A}
-bla
-\end{block}
-
-\begin{exampleblock}{B}
-bla
-\end{exampleblock}
-
-
-\begin{alertblock}{C}
-bla
-\end{alertblock}
+.
 }
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Literature}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Literature:\\Recommendations for further reading}
 \begin{itemize}
 \item A.\ Yaglom, Correlation Theory of Stationary and Related Random Functions, Springer Series in Statistics, 1987.
