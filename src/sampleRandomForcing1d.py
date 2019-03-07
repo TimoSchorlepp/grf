@@ -261,15 +261,15 @@ class RandField1d(object):
 		return
 ##################################################################	
 	def getChiHat(self,kx):
-		return np.sqrt(2*np.pi*self.l**2)*self.chi0*np.exp(-0.5*self.l**2*kx**2)
+		return self.chi0*np.exp(-0.5*self.l**2*kx**2)
 	
 	def getChi(self,x):
-		return self.chi0*np.exp(-x**2/(2.*self.l**2))
+		return self.chi0/np.sqrt(2 * self.l**2 * np.pi)*np.exp(-x**2/(2.*self.l**2))
 ##################################################################
 if __name__ == '__main__':
 	
 	chi0 = 1.
-	l = 1.
+	l = 0.1
 	xSz = 4*np.pi
 	nx = 32
 
