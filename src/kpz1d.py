@@ -22,11 +22,9 @@ class kpz1d(object):
 		self.time = 0 # count elapsed time
 		self.xi = rdf1.RandField1d(l,1.,L,N) # intensity of xi is D/dx
 		#initial condition for surface height
-		self.h = np.zeros(N)
-		#~ self.h[0] = 5.
-		X = np.linspace(0,(N-1)*self.dx,N)
-		for i in range(N):
-			self.h[i] = np.min([abs(X[0]-X[i]),abs(X[0]-X[i]+L),abs(X[0]-X[i]-L)])
+		W1 = np.cumsum(np.sqrt(self.dx) * np.random.randn(N/2))
+		W2 = np.cumsum(np.sqrt(self.dx) * np.random.randn(N/2))
+		self.h = np.concatenate([W1,W2[::-1]) # two sided Wiener process
 	
 	def step(self):
 		h = self.h
@@ -121,7 +119,8 @@ dx = L/N
 #~ N_iter = 300 #number of times the simulation os repeated
 #~ dhdtArr = np.zeros(N_iter) # will hold the average time derivative of h per simulation
 #~ for i in range(N_iter):
-	#~ print i
+	#~ sys.stdout.write("\rNumber of steps: {0}".format(simulation.steps))
+    #~ sys.stdout.flush()
 	#~ simulation = kpz1d(nu,lbda,D,l,N,L)
 	#~ N_multisteps = 100 # number of multisteps per simulation
 	#~ N_onemult = 50 # number of steps per multistep
@@ -130,23 +129,31 @@ dx = L/N
 		#~ dhdt_one_iter[j] = simulation.getdhdt(N_onemult)
 	#~ dhdtArr[i] = np.sum(dhdt_one_iter)/N_multisteps
 
+#~ print " "
 #~ print np.mean(dhdtArr)
 #~ print np.std(dhdtArr)
+#~ print " "
 
 # no correlation: 2.59 +- 0.10
 ###################################################
 # simulate to a given time in order to determine two-point correlation
-N_iter = 1000
-T = 1.
-hT = np.zeros(N_iter)
-for i in range(N_iter):
-	print i
-	simulation = kpz1d(nu,lbda,D,l,N,L)
-	simulation.stepUntilT(T)
-	hT[i] = simulation.h[0]
+#~ N_iter = 1000
+#~ T = 1.
+#~ hT = np.zeros(N_iter)
+#~ for i in range(N_iter):
+	#~ sys.stdout.write("\rNumber of steps: {0}".format(simulation.steps))
+    #~ sys.stdout.flush()
+	#~ simulation = kpz1d(nu,lbda,D,l,N,L)
+	#~ simulation.stepUntilT(T)
+	#~ hT[i] = simulation.h[0]
 
-simulation = kpz1d(nu,lbda,D,l,N,L)
-C = np.sum((hT - simulation.h[0] - T * 2.59)**2)/N_iter
+#~ print " "
+#~ print T
+#~ simulation = kpz1d(nu,lbda,D,l,N,L)
+#~ C = (hT - simulation.h[0] - T * 2.59)**2)
+#~ print np.mean(C)
+#~ print np.std(C)
+#~ print " "
 
 # no correlation
 # t = 0.1: C = 
