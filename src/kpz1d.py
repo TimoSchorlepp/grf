@@ -73,7 +73,7 @@ class kpz1d(object):
 		h_old = self.h
 		time_old = self.time
 		self.multistep(n)
-		return (np.sum(self.h)-np.sum(h_old))/(self.time-time_old)
+		return (np.mean(self.h)-np.mean(h_old))/(self.time-time_old)
 		
 
 def init():
@@ -133,8 +133,7 @@ dx = L/N
 #~ print np.mean(dhdtArr)
 #~ print np.std(dhdtArr)
 
-# no correlation: 337.73779737587535 +-29.992229916804153
-
+# no correlation: 2.59 +- 0.10
 ###################################################
 # simulate to a given time in order to determine two-point correlation
 N_iter = 1000
@@ -147,7 +146,7 @@ for i in range(N_iter):
 	hT[i] = simulation.h[0]
 
 simulation = kpz1d(nu,lbda,D,l,N,L)
-C = np.sum((hT - simulation.h[0] - T * 340)**2)/N_iter
+C = np.sum((hT - simulation.h[0] - T * 2.59)**2)/N_iter
 
 # no correlation
 # t = 0.1: C = 
