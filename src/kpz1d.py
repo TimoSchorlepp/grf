@@ -24,7 +24,7 @@ class kpz1d(object):
 		#initial condition for surface height
 		W1 = np.cumsum(np.sqrt(self.dx) * np.random.randn(N/2))
 		W2 = np.cumsum(np.sqrt(self.dx) * np.random.randn(N/2))
-		self.h = np.concatenate([W1,W2[::-1]) # two sided Wiener process
+		self.h = np.concatenate([W1,W2[::-1]]) # two sided Wiener process
 	
 	def step(self):
 		h = self.h
@@ -119,7 +119,7 @@ dx = L/N
 #~ N_iter = 300 #number of times the simulation os repeated
 #~ dhdtArr = np.zeros(N_iter) # will hold the average time derivative of h per simulation
 #~ for i in range(N_iter):
-	#~ sys.stdout.write("\rNumber of steps: {0}".format(simulation.steps))
+	#~ sys.stdout.write("\rNumber of steps: {0}".format(i))
     #~ sys.stdout.flush()
 	#~ simulation = kpz1d(nu,lbda,D,l,N,L)
 	#~ N_multisteps = 100 # number of multisteps per simulation
@@ -141,7 +141,7 @@ dx = L/N
 #~ T = 1.
 #~ hT = np.zeros(N_iter)
 #~ for i in range(N_iter):
-	#~ sys.stdout.write("\rNumber of steps: {0}".format(simulation.steps))
+	#~ sys.stdout.write("\rNumber of steps: {0}".format(i))
     #~ sys.stdout.flush()
 	#~ simulation = kpz1d(nu,lbda,D,l,N,L)
 	#~ simulation.stepUntilT(T)
