@@ -35,7 +35,7 @@
 \tiny{
 Vogelsberger et al. 2014, Illustris simulation}\\
 \includegraphics[width=.65\textwidth]{figures/2dns}\\
-\tiny{Murray 2017, 2$D$ stochastic NSE vorticity}
+\tiny{Murray 2017, 2$d$ stochastic NSE vorticity}
 \column{.5\textwidth}
 \centering
 \includegraphics[width=.65\textwidth]{figures/kpz}\\
@@ -292,9 +292,37 @@ Example: $d=1$ and $\chi(r) = \chi_0 \, e^{-r^2/2\lambda^2}$
 We will see a concrete implementation of the algorithm and a demonstration of convergence of the covariance for increasing number of samples.
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Application} 
-\frame{\frametitle{Title}
-.
+\section{Application to 1$d$ KPZ equation} 
+\frame{\frametitle{Application to 1$d$ KPZ equation}
+The evolution of the height $h$ of a growing interface may be modelled by the Kardar-Parisi-Zhang equation (1986):
+\begin{align*}
+\partial_t h = \nu \Delta h + \frac{\lambda}{2} \abs{\nabla h}^2 + \xi\\
+\left<\xi(x',t') \xi(x,t) \right> = D \; \chi(x'-x) \delta(t'-t)
+\end{align*}
+where \textcolor{red}{$\chi(x'-x) = \delta(x'-x)$} in the classical KPZ equation.\\
+In this case, for $d=1$ with initial height profile $\propto \abs{x}$ the stationary two-point correlation scales as
+\begin{align*}
+C(x,t) = \left<(h(x,t)-h(0,0)-t \langle \partial_t h\rangle)^2 \right> \propto t^{2/3} g\left( x t^{-2/3} \right)
+\end{align*}
+and in particular
+\begin{align*}
+C(0,t) \propto t^{2/3}.
+\end{align*}
+(Pr\"ahofer, Spohn 2004)
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Application to 1$d$ KPZ equation} 
+\frame{\frametitle{Application to 1$d$ KPZ equation}
+Discretization using Heun scheme
+\begin{align*}
+h_n^{(1)} &= h_n(t_i) + \frac{\nu \Delta t}{(\Delta x)^2} \left[h_{n+1}(t_i)-2 h_n(t_i) + h_{n-1}(t_i) \right]\\
+& \quad + \frac{\lambda \Delta t}{8 (\Delta x)^2} \left[h_{n+1}(t_i)-h_{n-1}(t_i) \right]^2 + \sqrt{\Delta t} \; \xi_{ni}\\
+h_n(t_{i+1}) &= h_n(t_i) + \frac{\nu \Delta t}{2 (\Delta x)^2} \left[h_{n+1}(t_i)-2 h_n(t_i) + h_{n-1}(t_i) \right.\\
+& \left. \quad + h_{n+1}^{(1)}-2 h_n^{(1)} + h_{n-1}^{(1)}\right]\\
+& \quad +  \frac{\lambda \Delta t}{16 (\Delta x)^2} \left[ \left( h_{n+1}(t_i) - h_{n-1}(t_i) \right)^2 + \left( h_{n+1} - h_{n-1} \right)^2 \right]\\
+& \quad +  \sqrt{\Delta t} \;  \xi_{ni}
+\end{align*}
+CFL: At least deterministic condition $\Delta t \leq (\Delta x)^2/(2 \nu)$ necessary!
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
@@ -314,6 +342,17 @@ We will see a concrete implementation of the algorithm and a demonstration of co
 \item J.\ Carron, M.\ Wolk, I.\ Szapudi, On fast generation of cosmological random fields, MNRAS, 2014.
 \end{itemize}
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Literature:\\Recommendations for further reading}
+\begin{itemize}
+\item M.\ Kardar, G.\ Parisi, Y.\ Zhang, Dynamic Scaling of Growing Interfaces, Phys.\ Rev.\ Lett.\ , 1986
+\item M.\ Pr\"ahofer, H.\ Spohn, Exact Scaling Functions for One-Dimensional Stationary KPZ Growth, Journal of Statistical Physics, 2004
+\item S.\ Mathey et.\ al.\ , KPZ equation with short-range
+correlated noise: emergent symmetries and non-universal
+observables, Phys.\ Rev.\ E, 2016
+\item R.\ Toral, P.\ Colet, Stochastic Numerical Methods: An Introduction for Students and Scientists, John Wiley \& Sons, 2014
+\end{itemize}
 
+}
 \end{document}
  
