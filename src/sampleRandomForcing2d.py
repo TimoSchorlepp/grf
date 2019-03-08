@@ -464,15 +464,15 @@ class RandField2d(object):
 if __name__ == '__main__':
 	
 	chi0 = 1.
-	l = 1.
+	l = 1.0
 	xSz = 2*np.pi
 	ySz = 2*np.pi
 	nx = 32
 	ny = 32
 	
 	rdf = RandField2d(l,chi0,xSz,ySz,nx,ny)
-	#~ rdf.plotFieldRealizationRealSpace()
+	rdf.plotFieldRealizationRealSpace()
 	#~ rdf.testErrorConvergenceKSpaceSameK(10,100000,50)
 	#~ rdf.testErrorConvergenceKSpaceDifferentK(10,10000,50)
-	rdf.testErrorConvergenceRealSpaceDifferentXSpectral(10,4000,50)
+	#~ rdf.testErrorConvergenceRealSpaceDifferentXSpectral(10,4000,50)
 	#~ rdf.testErrorConvergenceRealSpaceDifferentXDirect(10,4000,50)

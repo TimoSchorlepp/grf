@@ -293,7 +293,7 @@ We will see a concrete implementation of the algorithm and a demonstration of co
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Application to 1$d$ KPZ equation} 
-\frame{\frametitle{Application to 1$d$ KPZ equation}
+\frame{\frametitle{Application to 1$d$ KPZ equation:\\Setup}
 The evolution of the height $h$ of a growing interface may be modelled by the Kardar-Parisi-Zhang equation (1986):
 \begin{align*}
 \partial_t h = \nu \Delta h + \frac{\lambda}{2} \abs{\nabla h}^2 + \xi\\
@@ -311,7 +311,7 @@ C(0,t) \propto t^{2/3}.
 (Pr\"ahofer, Spohn 2004)
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\frame{\frametitle{Application to 1$d$ KPZ equation}
+\frame{\frametitle{Application to 1$d$ KPZ equation:\\Discretization}
 Discretization using Heun scheme
 \begin{align*}
 h_n^{(1)} &= h_n(t_i) + \frac{\nu \Delta t}{(\Delta x)^2} \left[h_{n+1}(t_i)-2 h_n(t_i) + h_{n-1}(t_i) \right]\\
@@ -324,10 +324,14 @@ h_n(t_{i+1}) &= h_n(t_i) + \frac{\nu \Delta t}{2 (\Delta x)^2} \left[h_{n+1}(t_i
 CFL: At least deterministic condition $\Delta t \leq (\Delta x)^2/(2 \nu)$ necessary!
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\frametitle{Application to 1$d$ KPZ equation:\\Results}
+
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\frame{\frametitle{Title}
-.
+\frame{\frametitle{Conclusion}
+
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Literature}

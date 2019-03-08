@@ -82,7 +82,7 @@ def animate(i):
     simulation.multistep(100)
     h = simulation.h
     hmean = sum(h)/simulation.N
-    hmean = 0
+    #~ hmean = 0
     line.set_data(x_values,h-hmean)
     sys.stdout.write("\rNumber of steps: {0}".format(simulation.steps))
     sys.stdout.flush()  
@@ -91,7 +91,7 @@ def animate(i):
 nu = 1.
 lbda = 1.
 D = 1.
-l = 0.0000001
+l = 0.1
 N = 128
 L = 2 * np.pi
 dx = L/N
@@ -134,10 +134,11 @@ dx = L/N
 #~ print np.std(dhdtArr)
 #~ print " "
 
-# no correlation: 2.59 +- 0.10
+# no correlation: 2.6606056387 +- 0.239304534343
+# l = 0.1: 0.919280856789 +- 0.139945416789
 ###################################################
 # simulate to a given time in order to determine two-point correlation
-#~ N_iter = 1000
+#~ N_iter = 5000
 #~ T = 1.
 #~ hT = np.zeros(N_iter)
 #~ for i in range(N_iter):
@@ -150,22 +151,39 @@ dx = L/N
 #~ print " "
 #~ print T
 #~ simulation = kpz1d(nu,lbda,D,l,N,L)
-#~ C = (hT - simulation.h[0] - T * 2.59)**2)
+#~ C = (hT - simulation.h[0] - T * 2.59)**2
 #~ print np.mean(C)
 #~ print np.std(C)
 #~ print " "
 
-# no correlation
-# t = 0.1: C = 
-# t = 0.25: C = 
-# t = 0.5: C =
-# t = 1: C =
-# t = 2: C = 
-# t = 3: C =
-# t = 4: C =
-# t = 5: C = 
+###################################################
+#results and plot
+# no correlation (l=0.0000001)
+T = [0.1,0.2,0.4,0.8,1.0,1.5,2.0,3.0,4.0,5.0,10.0,15.0,20.0]
+C = [0.364698746382,0.369589335121,0.503156568733,0.701948358368,0.80019422148,1.00439449743,1.13760972451,1.32461128624,1.56560673803,1.71280019755,2.6958902609,3.73011266158,5.3979972634]
 
+# l = 0.01
+#~ T = 
+#~ C =
 
+# l = 0.1
+#~ T = 
+#~ C =
+
+# l = 1
+#~ T = 
+#~ C =
+
+# comparison T^(2/3)
+Tline = np.logspace(np.log10(0.1),np.log10(20.),100)
+Cline = 0.8 * Tline**(2./3.)
+
+plt.loglog(T,C,'*')
+plt.loglog(Tline,Cline,label = r'$C(t) = \alpha t^{2/3} $')
+plt.xlabel(r'$t$')
+plt.ylabel(r'$C$')
+plt.legend(loc='best')
+plt.show()
 
 
 		
