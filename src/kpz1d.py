@@ -113,22 +113,22 @@ dx = L/N
 
 ###################################################
 # uncomment for animation of surface growth 
-#~ simulation = kpz1d(nu,lbda,D,l,N,L)
-#~ x_values = np.linspace(0, (N - 1) * dx, N)
-#~ plot_xmax = N * dx
-#~ plot_hmin, plot_hmax = -1.,5.
-#~ plot_height = plot_hmax - plot_hmin
-#~ fig = plt.figure()
-#~ plt.axes(xlim=(0, plot_xmax), ylim=(plot_hmin, plot_hmax))
+simulation = kpz1d(nu,lbda,D,l,N,L)
+x_values = np.linspace(0, (N - 1) * dx, N)
+plot_xmax = N * dx
+plot_hmin, plot_hmax = -1.,5.
+plot_height = plot_hmax - plot_hmin
+fig = plt.figure()
+plt.axes(xlim=(0, plot_xmax), ylim=(plot_hmin, plot_hmax))
 
-#~ line = plt.plot([], [])[0]
-#~ text = plt.text(0.2*plot_xmax, plot_hmin + 0.9*plot_height, r"$t = 0$", fontsize=20)
+line = plt.plot([], [])[0]
+text = plt.text(0.2*plot_xmax, plot_hmin + 0.9*plot_height, r"$t = 0$", fontsize=20)
             
-#~ plt.xlabel('$x$', fontsize=16)
-#~ plt.ylabel(r'$h$', fontsize=16)
+plt.xlabel('$x$', fontsize=16)
+plt.ylabel(r'$h$', fontsize=16)
 
-#~ animationObject = anim.FuncAnimation(fig, animate, init_func=init, blit=True)
-#~ plt.show()
+animationObject = anim.FuncAnimation(fig, animate, init_func=init, blit=True)
+plt.show()
 
 ###################################################
 # determine mean time derivative of h
@@ -155,21 +155,21 @@ dx = L/N
 # l = 0.5: 0.174165294171 +- 0.11745536202
 ###################################################
 # simulate to a given time in order to determine two-point correlation
-N_iter = 5000
-T = np.array([0.1,0.2,0.4,0.8,1.0,1.5,2.0,3.0,4.0,5.0,10.0,15.0,18.0,20.0,30.0,40.0,50.0])
-Trep = np.repeat(T[:,np.newaxis],N_iter,axis=1).shape
-hT = np.zeros((len(T),N_iter))
-for i in range(N_iter):
-	sys.stdout.write("\rNumber of steps: {0}".format(i))
-	sys.stdout.flush()
-	simulation = kpz1d(nu,lbda,D,l,N,L)
-	hT[:,i] = simulation.stepUntilTArray(T)
+#~ N_iter = 5000
+#~ T = np.array([0.1,0.2,0.4,0.8,1.0,1.5,2.0,3.0,4.0,5.0,10.0,15.0,18.0,20.0,30.0,40.0,50.0])
+#~ Trep = np.repeat(T[:,np.newaxis],N_iter,axis=1).shape
+#~ hT = np.zeros((len(T),N_iter))
+#~ for i in range(N_iter):
+	#~ sys.stdout.write("\rNumber of steps: {0}".format(i))
+	#~ sys.stdout.flush()
+	#~ simulation = kpz1d(nu,lbda,D,l,N,L)
+	#~ hT[:,i] = simulation.stepUntilTArray(T)
 
-print " "
-print T
-C = np.sum((hT - Tarr * 2.66061)**2,axis=1)/N_iter
-print C
-print " "
+#~ print " "
+#~ print T
+#~ C = np.sum((hT - Tarr * 2.66061)**2,axis=1)/N_iter
+#~ print C
+#~ print " "
 
 ###################################################
 #~ #results and plot

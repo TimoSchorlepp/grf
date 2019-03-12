@@ -448,7 +448,7 @@ class RandField2d(object):
 		ret[0,1] = -kx*ky
 		ret[1,0] = -kx*ky
 		ret[1,1] = kx**2
-		ret = ret * self.chi0*self.l**2*np.exp(-0.5*(kx**2+ky**2)*self.l**2)
+		ret = ret * 2 * np.pi * self.chi0*self.l**4*np.exp(-0.5*(kx**2+ky**2)*self.l**2)
 		return ret
 	
 	def getChi(self,x,y):
@@ -457,22 +457,22 @@ class RandField2d(object):
 		ret[0,1] = x*y
 		ret[1,0] = x*y
 		ret[1,1] = self.l**2 - x**2
-		ret = ret * self.chi0 / ((2 * np.pi *self.l**2) * self.l**2) * np.exp(-(x**2+y**2)/2./self.l**2)
+		ret = ret * self.chi0 / self.l**2 * np.exp(-(x**2+y**2)/2./self.l**2)
 		return ret
 ##################################################################
 
 if __name__ == '__main__':
 	
 	chi0 = 1.
-	l = 0.001
+	l = 0.5
 	xSz = 2*np.pi
 	ySz = 2*np.pi
-	nx = 32
-	ny = 32
+	nx = 16
+	ny = 16
 	
 	rdf = RandField2d(l,chi0,xSz,ySz,nx,ny)
 	rdf.plotFieldRealizationRealSpace()
 	#~ rdf.testErrorConvergenceKSpaceSameK(10,100000,50)
 	#~ rdf.testErrorConvergenceKSpaceDifferentK(10,10000,50)
-	#~ rdf.testErrorConvergenceRealSpaceDifferentXSpectral(10,4000,50)
+	rdf.testErrorConvergenceRealSpaceDifferentXSpectral(10,1000,50)
 	#~ rdf.testErrorConvergenceRealSpaceDifferentXDirect(10,4000,50)

@@ -260,6 +260,7 @@ class RandField1d(object):
 		plt.close()
 		return
 ##################################################################	
+	#normalization in real space such that integral of chi equals chi0, important for white noise limit for lambda -> 0
 	def getChiHat(self,kx):
 		return self.chi0*np.exp(-0.5*self.l**2*kx**2)
 	
