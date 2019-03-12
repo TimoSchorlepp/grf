@@ -448,7 +448,7 @@ class RandField2d(object):
 		ret[0,1] = -kx*ky
 		ret[1,0] = -kx*ky
 		ret[1,1] = kx**2
-		ret = ret * 2*np.pi*self.chi0*self.l**4*np.exp(-0.5*(kx**2+ky**2)*self.l**2)
+		ret = ret * self.chi0*self.l**2*np.exp(-0.5*(kx**2+ky**2)*self.l**2)
 		return ret
 	
 	def getChi(self,x,y):
@@ -457,14 +457,14 @@ class RandField2d(object):
 		ret[0,1] = x*y
 		ret[1,0] = x*y
 		ret[1,1] = self.l**2 - x**2
-		ret = ret * self.chi0 / self.l**2 * np.exp(-(x**2+y**2)/2./self.l**2)
+		ret = ret * self.chi0 / ((2 * np.pi *self.l**2) * self.l**2) * np.exp(-(x**2+y**2)/2./self.l**2)
 		return ret
 ##################################################################
 
 if __name__ == '__main__':
 	
 	chi0 = 1.
-	l = 1.0
+	l = 0.001
 	xSz = 2*np.pi
 	ySz = 2*np.pi
 	nx = 32
