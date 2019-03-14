@@ -215,7 +215,7 @@ Let $\vec{\xi}$ be a stationary GRF on $\mathbb{R}^d$ with correlation matrix $\
 $\vec{W}$ is real $\Longrightarrow$ $\left< \hat{\vec{W}}(\vec{k}')\hat{\vec{W}}(\vec{k})^T \right> =(2 \pi)^d I_d \; \delta(\vec{k}' +\vec{k})$\\
 \normalsize
 \begin{alertblock}{Remark 13}
-Theorem 11 shows that the Fourier modes of a stationary GRF are "decoupled" (modulo symmetry, due to $\vec{\xi}$ being real). Thus, instead of decomposing a $(N_1 \cdots N_d d) \times (N_1 \cdots N_d d)$ matrix, we need to decompose (analytically, so far) a single $d \times d$ matrix.
+Theorem 12 shows that the Fourier modes of a stationary GRF are "decoupled" (modulo symmetry, due to $\vec{\xi}$ being real). Thus, instead of decomposing a $(N_1 \cdots N_d d) \times (N_1 \cdots N_d d)$ matrix, we need to decompose (analytically, so far) a single $d \times d$ matrix.
 \end{alertblock}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -332,7 +332,7 @@ CFL: At least deterministic condition $\Delta t \leq (\Delta x)^2/(2 \nu)$ neces
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \frame{\frametitle{Conclusion}
 \begin{itemize}
-\item Successfully sampled GRF realizations with stationary, isotropic and solneoidal correlation matrix
+\item Successfully sampled GRF realizations with stationary, isotropic and solenoidal correlation matrix
 \item Used the FFT to avoid dealing with large grid covariance matrices, imposes periodic boundary conditions
 \item Implemented a simple application for the 1$d$ KPZ equation, could investigate further
 \item Other follow-ups: Implement and compare to circulant embedding, try different correlation matrices, application to stochastic NSE
@@ -355,7 +355,7 @@ CFL: At least deterministic condition $\Delta t \leq (\Delta x)^2/(2 \nu)$ neces
 \begin{itemize}
 \item M.\ Kardar, G.\ Parisi, Y.\ Zhang, Dynamic Scaling of Growing Interfaces, Phys.\ Rev.\ Lett.\ , 1986
 \item M.\ Pr\"ahofer, H.\ Spohn, Exact Scaling Functions for One-Dimensional Stationary KPZ Growth, Journal of Statistical Physics, 2004
-\item S.\ Mathey et.\ al.\ , KPZ equation with short-range
+\item S.\ Mathey et.\ al., KPZ equation with short-range
 correlated noise: emergent symmetries and non-universal
 observables, Phys.\ Rev.\ E, 2016
 \item R.\ Toral, P.\ Colet, Stochastic Numerical Methods: An Introduction for Students and Scientists, John Wiley \& Sons, 2014

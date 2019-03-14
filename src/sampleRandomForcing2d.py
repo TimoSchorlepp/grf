@@ -464,7 +464,7 @@ class RandField2d(object):
 if __name__ == '__main__':
 	
 	chi0 = 1.
-	l = 0.5
+	l = 1.0
 	xSz = 2*np.pi
 	ySz = 2*np.pi
 	nx = 16
