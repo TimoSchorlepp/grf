@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import time
 
 class RandField1d(object):
 	
@@ -12,7 +13,8 @@ class RandField1d(object):
 		self.nx = nx # number of gridpoints
 		self.dx = xSz/nx # grid spacing
 		self.X = np.linspace(0.,xSz-self.dx,nx)
-		self.KX = 2*np.pi*np.fft.fftfreq(self.nx, self.dx) # 2*pi needed due to different convention in np.fft
+		self.KX = 2*np.pi*np.fft.rfftfreq(self.nx, self.dx) # 2*pi needed due to different convention in np.fft
+		self.nkx = self.nx//2 + 1
 		self.Mmax = 33 # number of neigbour intervals considered for periodically wrapped correlation
 		self.M = np.linspace(-(self.Mmax-1)/2,(self.Mmax-1)/2,self.Mmax) # array for shifted copies of chi
 		
@@ -42,11 +44,14 @@ class RandField1d(object):
 ##################################################################
 	def getFieldRealizationKSpace(self):
 		W = 1./np.sqrt(self.dx) * np.random.randn(self.nx) # sample discretized white noise in real space
-		return np.sqrt(2*np.pi) * self.lbda_spec * np.fft.fft(W, norm='ortho') # multiply by sqrt(2 pi) for analogy with continuous case, no other purpose..
+		return np.sqrt(2*np.pi) * self.lbda_spec * np.fft.rfft(W, norm='ortho') # multiply by sqrt(2 pi) for analogy with continuous case, no other purpose..
+	
+	def getFieldRealizationKSpaceFast(self):
+		return np.sqrt(2*np.pi)/np.sqrt(2 * self.dx) * self.lbda_spec * (np.random.randn(self.nkx) + 1j * np.random.randn(self.nkx))
 	
 	def getFieldRealizationRealSpaceSpectral(self):
-		xi = self.getFieldRealizationKSpace()
-		return np.fft.ifft(xi,norm='ortho').real/np.sqrt(2*np.pi) # remove the 2 pi factor again..
+		xi = self.getFieldRealizationKSpaceFast()
+		return np.fft.irfft(xi,norm='ortho')/np.sqrt(2*np.pi) # remove the 2 pi factor again..
 	
 	def getFieldRealizationRealSpaceDirect(self):
 		return np.dot(self.lbda_direct,np.random.randn(self.nx)) 
@@ -111,6 +116,10 @@ class RandField1d(object):
 		plt.colorbar()
 		plt.show()
 		
+		plt.imshow(errMatrix)
+		plt.colorbar()
+		plt.show()
+		
 		plt.figure()
 		plt.loglog(num,err,c='blue')
 		plt.loglog(num,err,'.',c='blue')
@@ -132,10 +141,10 @@ class RandField1d(object):
 		num = np.logspace(np.log10(n1),np.log10(n2),n,dtype = int)
 		err = np.zeros(n)
 		
-		correlRealizations = np.zeros((self.nx,self.nx),dtype=complex)
-		correlExact = np.zeros((self.nx,self.nx))
+		correlRealizations = np.zeros((self.nkx,self.nkx),dtype=complex)
+		correlExact = np.zeros((self.nkx,self.nkx))
 		
-		for j in range(self.nx):
+		for j in range(self.nkx):
 			correlExact[j,j] = 2*np.pi/self.dx  * self.getChiHat(self.KX[j])
 		
 		plt.imshow(correlExact)
@@ -249,7 +258,21 @@ class RandField1d(object):
 		
 		print " "
 		return
-##################################################################	
+##################################################################
+	def testExectionTime(self):
+		N = 100000
+		start = time.time()
+		for i in range(N):
+			self.getFieldRealizationKSpace()
+		print "Exection time using FFT: ", (time.time()-start)/N
+		
+		start = time.time()
+		for i in range(N):
+			self.getFieldRealizationKSpaceFast()
+		print "Exection time without FFT: ", (time.time()-start)/N
+		
+		return
+##################################################################		
 	def plotFieldRealizationRealSpace(self):
 		xi = self.getFieldRealizationRealSpaceSpectral()
 		plt.figure()
@@ -260,7 +283,6 @@ class RandField1d(object):
 		plt.close()
 		return
 ##################################################################	
-	#normalization in real space such that integral of chi equals chi0, important for white noise limit for lambda -> 0
 	def getChiHat(self,kx):
 		return self.chi0*np.exp(-0.5*self.l**2*kx**2)
 	
@@ -270,12 +292,14 @@ class RandField1d(object):
 if __name__ == '__main__':
 	
 	chi0 = 1.
-	l = 0.1
-	xSz = 4*np.pi
-	nx = 32
+	l = 0.5
+	xSz = 2*np.pi
+	nx = 128
 
 	rdf = RandField1d(l,chi0,xSz,nx)
-	rdf.plotFieldRealizationRealSpace()
-	#~ rdf.testErrorConvergenceKSpace(10,10000,60)
-	#~ rdf.testErrorConvergenceRealSpaceSpectral(10,10000,60)
+	#~ rdf.testExectionTime()
+	#~ rdf.getFieldRealizationKSpaceFast()
+	#~ rdf.plotFieldRealizationRealSpace()
+	#~ rdf.testErrorConvergenceKSpace(10,1000000,60)
+	rdf.testErrorConvergenceRealSpaceSpectral(10,100000,60)
 	#~ rdf.testErrorConvergenceRealSpaceDirect(10,10000,60)

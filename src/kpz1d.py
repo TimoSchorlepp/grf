@@ -106,7 +106,7 @@ def animate(i):
 nu = 1.
 lbda = 1.
 D = 1.
-l = 0.1
+l = 1.
 N = 128
 L = 2 * np.pi
 dx = L/N
