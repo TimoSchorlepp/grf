@@ -36,9 +36,31 @@ class RandField3d(object):
 		xi = 1./np.sqrt(self.dx * self.dy * self.dz) * np.random.randn(self.nx,self.ny,self.nz,3)
 		xihat = np.fft.fftn(xi,axes=(0,1,2),norm='ortho')
 		return (2*np.pi)**(3./2.) * np.multiply(self.lbda,xihat[:,:,:,np.newaxis,:]).sum(axis=4)
+		
+	def getFieldRealizationKSpaceFast(self):
+		# Start directly in Fourier space fpr sampling, thus omitting one FFT!
+		# If the pseudo covariance in fourier space is of importance for the application, 
+		# one needs to make sure that the symmetry condition following from the noise being real is fulfilled.
+		# However, this results in the function being slower than the FFT application in many cases...
+		
+		#~ what = (2*np.pi)**(3./2.)/np.sqrt(2* self.dx * self.dy * self.dz) * (np.random.randn(self.nx,self.ny,self.nz,3) + 1j * np.random.randn(self.nx,self.ny,self.nz,3))
+		#~ for i in range(self.nx):
+			#~ for j in range(self.ny):
+				#~ for k in range(self.nz):
+				#~ if what[-i,-j,-k,0] == what[i,j,k,0]:
+					#~ what[-i,-j,-k,:].imag = [0,0,0]
+				#~ else:
+					#~ what[-i,-j,-k,:] = np.conjugate(what[i,j,k,:])
+		
+		# If you don't care about what's happening in Fourier space and only need the final realizations in real space, use the lines below instead
+		# Here, one may either take the real or imaginary part of the resulting realization in real space; the correct covariance will be obtained either way
+		# Note the missing factor of 1/sqrt(2) in the normalization in this case!
+		
+		what = (2*np.pi)**(3./2.)/np.sqrt( self.dx * self.dy * self.dz) * (np.random.randn(self.nx,self.ny,self.nz,3) + 1j * np.random.randn(self.nx,self.ny,self.nz,3))
+		return np.multiply(self.lbda_spec,what[:,:,:,np.newaxis,:]).sum(axis=4)
 	
 	def getFieldRealizationRealSpace(self):
-		xihat = self.getFieldRealizationKSpace()
+		xihat = self.getFieldRealizationKSpaceFast()
 		return np.fft.ifftn(xihat,axes=(0,1,2),norm='ortho').real/(2*np.pi)**(3./2.)
 ##################################################################
 	def testErrorConvergenceRealSpaceDifferentX(self,n1,n2,n):
@@ -248,6 +270,20 @@ class RandField3d(object):
 		plt.close()
 		
 		print " "
+		return
+##################################################################
+	def testExectionTime(self):
+		N = 10000
+		start = time.time()
+		for i in range(N):
+			self.getFieldRealizationKSpace()
+		print "Exection time using FFT: ", (time.time()-start)/N
+		
+		start = time.time()
+		for i in range(N):
+			self.getFieldRealizationKSpaceFast()
+		print "Exection time without FFT: ", (time.time()-start)/N
+		
 		return
 ##################################################################
 	def plotFieldRealizationRealSpace(self):

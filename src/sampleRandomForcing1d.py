@@ -43,10 +43,12 @@ class RandField1d(object):
 		return
 ##################################################################
 	def getFieldRealizationKSpace(self):
+		# Start in real space with white noise sampling, perform FFT
 		W = 1./np.sqrt(self.dx) * np.random.randn(self.nx) # sample discretized white noise in real space
 		return np.sqrt(2*np.pi) * self.lbda_spec * np.fft.rfft(W, norm='ortho') # multiply by sqrt(2 pi) for analogy with continuous case, no other purpose..
 	
 	def getFieldRealizationKSpaceFast(self):
+		#Start directly in Fourier space, the symmetry condition W(-k)= W(k)* is automatically fulfilled since we're using rfft! 
 		return np.sqrt(2*np.pi)/np.sqrt(2 * self.dx) * self.lbda_spec * (np.random.randn(self.nkx) + 1j * np.random.randn(self.nkx))
 	
 	def getFieldRealizationRealSpaceSpectral(self):
@@ -260,7 +262,7 @@ class RandField1d(object):
 		return
 ##################################################################
 	def testExectionTime(self):
-		N = 100000
+		N = 1000000
 		start = time.time()
 		for i in range(N):
 			self.getFieldRealizationKSpace()
@@ -297,9 +299,9 @@ if __name__ == '__main__':
 	nx = 128
 
 	rdf = RandField1d(l,chi0,xSz,nx)
-	#~ rdf.testExectionTime()
+	rdf.testExectionTime()
 	#~ rdf.getFieldRealizationKSpaceFast()
 	#~ rdf.plotFieldRealizationRealSpace()
 	#~ rdf.testErrorConvergenceKSpace(10,1000000,60)
-	rdf.testErrorConvergenceRealSpaceSpectral(10,100000,60)
+	#~ rdf.testErrorConvergenceRealSpaceSpectral(10,100000,60)
 	#~ rdf.testErrorConvergenceRealSpaceDirect(10,10000,60)

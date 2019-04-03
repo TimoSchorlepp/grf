@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import time
 
 class RandField2d(object):
 	
@@ -65,7 +66,8 @@ class RandField2d(object):
 		return
 	
 	def init_lbda_embedded(self):
-		#search for positive definite embedding, need to optimize the search step size, value given in paper is unnecessarily large !!!
+		# search for positive definite embedding, need to optimize the search step size, value given in paper is unnecessarily large !!!
+		# also, the implementation is not using any properties of block circulant matrices, so it becomes very slow for large embedding matrices...
 		
 		mxmin_exp = int(np.ceil(np.log(2 * self.nx - 2)/np.log(3))) # minimum grid size (3**mxmin_exp) in x direction to embed into
 		mymin_exp = int(np.ceil(np.log(2 * self.ny - 2)/np.log(3)))
@@ -116,17 +118,37 @@ class RandField2d(object):
 					V[:,D<1e-14] = 0
 					D[D<1e-14] = 0.
 					self.lbda_embedded = np.dot(V,np.sqrt(np.diag(D)))
-					return
-				
-				
+					return			
 ##################################################################
 	def getFieldRealizationKSpace(self):
-		xi = 1./np.sqrt(self.dx * self.dy) * np.random.randn(self.nx,self.ny,2)
+		# start in real space with discretized white noise, apply FFT
+		xi = 1./np.sqrt(self.dx * self.dy) * (np.random.randn(self.nx,self.ny,2))
 		xihat = np.fft.fftn(xi,axes=(0,1),norm='ortho')
 		return (2 * np.pi) * np.multiply(self.lbda_spec,xihat[:,:,np.newaxis,:]).sum(axis=3)
-
+	
+	def getFieldRealizationKSpaceFast(self):
+		# Start directly in Fourier space fpr sampling, thus omitting one FFT!
+		# If the pseudo covariance in fourier space is of importance for the application, 
+		# one needs to make sure that the symmetry condition following from the noise being real is fulfilled.
+		# However, this results in the function being slower than the FFT application in many cases...
+		
+		#~ what = 2*np.pi/np.sqrt(2* self.dx * self.dy) * (np.random.randn(self.nx,self.ny,2) + 1j * np.random.randn(self.nx,self.ny,2))
+		#~ for i in range(self.nx):
+			#~ for j in range(self.ny):
+				#~ if what[-i,-j,0] == what[i,j,0]:
+					#~ what[-i,-j,:].imag = [0,0]
+				#~ else:
+					#~ what[-i,-j,:] = np.conjugate(what[i,j,:])
+		
+		# If you don't care about what's happening in Fourier space and only need the final realizations in real space, use the lines below instead
+		# Here, one may either take the real or imaginary part of the resulting realization in real space; the correct covariance will be obtained either way
+		# Note the missing factor of 1/sqrt(2) in the normalization in this case!
+		
+		what = 2*np.pi/np.sqrt( self.dx * self.dy) * (np.random.randn(self.nx,self.ny,2) + 1j * np.random.randn(self.nx,self.ny,2))
+		return np.multiply(self.lbda_spec,what[:,:,np.newaxis,:]).sum(axis=3)
+	
 	def getFieldRealizationRealSpaceSpectral(self):
-		xihat = self.getFieldRealizationKSpace()
+		xihat = self.getFieldRealizationKSpaceFast()
 		return 1./(2*np.pi) * np.fft.ifftn(xihat,axes=(0,1),norm='ortho').imag
 	
 	def getFieldRealizationRealSpaceDirect(self):
@@ -424,6 +446,20 @@ class RandField2d(object):
 		print " "
 		return
 ##################################################################
+	def testExectionTime(self):
+		N = 10000
+		start = time.time()
+		for i in range(N):
+			self.getFieldRealizationKSpace()
+		print "Exection time using FFT: ", (time.time()-start)/N
+		
+		start = time.time()
+		for i in range(N):
+			self.getFieldRealizationKSpaceFast()
+		print "Exection time without FFT: ", (time.time()-start)/N
+		
+		return
+##################################################################
 	def plotFieldRealizationRealSpace(self):
 		xi = self.getFieldRealizationRealSpaceSpectral()
 		Xmgrd,Ymgrd = np.meshgrid(self.X,self.Y)
@@ -464,7 +500,7 @@ class RandField2d(object):
 if __name__ == '__main__':
 	
 	chi0 = 1.
-	l = 1.0
+	l = 1.5
 	xSz = 2*np.pi
 	ySz = 2*np.pi
 	nx = 16
@@ -472,7 +508,8 @@ if __name__ == '__main__':
 	
 	rdf = RandField2d(l,chi0,xSz,ySz,nx,ny)
 	rdf.plotFieldRealizationRealSpace()
+	#~ rdf.testExectionTime()
 	#~ rdf.testErrorConvergenceKSpaceSameK(10,100000,50)
 	#~ rdf.testErrorConvergenceKSpaceDifferentK(10,10000,50)
-	rdf.testErrorConvergenceRealSpaceDifferentXSpectral(10,1000,50)
+	rdf.testErrorConvergenceRealSpaceDifferentXSpectral(10,100000,50)
 	#~ rdf.testErrorConvergenceRealSpaceDifferentXDirect(10,4000,50)
