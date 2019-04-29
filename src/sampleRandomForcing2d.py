@@ -511,5 +511,5 @@ if __name__ == '__main__':
 	#~ rdf.testExectionTime()
 	#~ rdf.testErrorConvergenceKSpaceSameK(10,100000,50)
 	#~ rdf.testErrorConvergenceKSpaceDifferentK(10,10000,50)
-	rdf.testErrorConvergenceRealSpaceDifferentXSpectral(10,100000,50)
+	rdf.testErrorConvergenceRealSpaceDifferentXSpectral(10,1000,50)
 	#~ rdf.testErrorConvergenceRealSpaceDifferentXDirect(10,4000,50)
